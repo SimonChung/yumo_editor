@@ -38,3 +38,4 @@ go.work.sum
 /frontend/package-lock.json
 /spec
 /TASKS.md
+/build_windows_amd64.syso
