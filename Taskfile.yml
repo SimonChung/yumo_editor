@@ -1,0 +1,117 @@
+# Wails v3 Taskfile
+# 使用 Task (https://taskfile.dev/) 來管理專案的建構與開發任務
+# 安裝: go install github.com/go-task/task/v3/cmd/task@latest
+
+version: '3'
+
+vars:
+  APP_NAME: "yumo_editor"
+  BIN_DIR: "build/bin"
+
+tasks:
+  default:
+    desc: "Display available tasks"
+    cmds:
+      - task --list
+
+  install:frontend:deps:
+    desc: "Install frontend dependencies"
+    dir: frontend
+    sources:
+      - package.json
+    generates:
+      - node_modules/.package-lock.json
+    cmds:
+      - npm install
+
+  build:frontend:
+    desc: "Build the frontend"
+    dir: frontend
+    deps:
+      - install:frontend:deps
+    cmds:
+      - npm run build
+
+  generate:bindings:
+    desc: "Generate Wails v3 bindings"
+    cmds:
+      - wails3 generate bindings
+
+  generate:syso:
+    desc: "Generate Windows .syso file for icon and manifest"
+    platforms: [windows]
+    cmds:
+      - wails3 generate syso -arch amd64 -icon build/windows/icon.ico -manifest build/windows/wails.exe.manifest -info build/windows/info.json -out build_windows_amd64.syso
+
+  build:
+    desc: "Build the application"
+    deps:
+      - build:frontend
+    cmds:
+      - task: generate:syso
+      - go build {{if eq OS "windows"}}-ldflags="-H=windowsgui"{{end}} -o {{.BIN_DIR}}/{{.APP_NAME}}{{exeExt}} .
+
+  package:windows:
+    desc: "Package the application into a Windows installer (requires NSIS)"
+    deps:
+      - build
+    platforms: [windows]
+    dir: build/windows/installer
+    cmds:
+      - powershell -Command "if (!(Test-Path tmp)) { New-Item -ItemType Directory -Force -Path tmp }"
+      - powershell -Command "if (!(Test-Path tmp/MicrosoftEdgeWebview2Setup.exe)) { curl.exe -L -o tmp/MicrosoftEdgeWebview2Setup.exe 'https://go.microsoft.com/fwlink/p/?LinkId=2124703' }"
+      - makensis -DARG_WAILS_AMD64_BINARY=..\\..\\bin\\{{.APP_NAME}}.exe project.nsi
+
+  package:darwin:
+    desc: "Package the application into a macOS App Bundle"
+    platforms: [darwin]
+    cmds:
+      - wails3 package
+
+  package:linux:
+    desc: "Package the application for Linux"
+    platforms: [linux]
+    cmds:
+      - wails3 package
+
+  package:
+    desc: "Package the application for the current platform"
+    cmds:
+      - task: package:{{OS}}
+
+  dev:
+    desc: "Run in development mode with hot-reload"
+    cmds:
+      - wails3 dev
+
+  clean:
+    desc: "Clean build artifacts"
+    cmds:
+      - cmd: rm -rf {{.BIN_DIR}}
+        ignore_error: true
+      - cmd: rm -rf frontend/dist
+        ignore_error: true
+
+  clean:frontend:deps:
+    desc: "Clean frontend node_modules and package-lock.json"
+    cmds:
+      - cmd: rm -rf frontend/node_modules
+        ignore_error: true
+      - cmd: rm -rf frontend/package-lock.json
+        ignore_error: true
+
+  clean:all:
+    desc: "Clean all build artifacts and frontend node_modules"
+    cmds:
+      - task: clean
+      - task: clean:frontend:deps
+
+  test:
+    desc: "Run Go tests"
+    cmds:
+      - go test ./...
+
+  vet:
+    desc: "Run Go vet"
+    cmds:
+      - go vet ./...

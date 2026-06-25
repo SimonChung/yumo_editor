@@ -1,0 +1,147 @@
+.tab-bar-container {
+    display: flex;
+    align-items: center;
+    background-color: #0f141c;
+    height: 35px;
+    border-bottom: 1px solid #1a2332;
+    padding-right: 8px;
+    user-select: none;
+}
+
+.tab-scroll-area {
+    display: flex;
+    overflow-x: auto;
+    flex-grow: 1;
+    height: 100%;
+}
+
+/* 隱藏預設捲軸，但維持滾動功能 */
+.tab-scroll-area::-webkit-scrollbar {
+    height: 3px;
+}
+
+.tab-scroll-area::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.tab-scroll-area::-webkit-scrollbar-thumb {
+    background: #232c3d;
+    border-radius: 2px;
+}
+
+.tab-item {
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    background-color: #0a0d14;
+    border-right: 1px solid #161b24;
+    color: #64748b;
+    font-size: 12px;
+    height: 100%;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    min-width: 120px;
+    max-width: 180px;
+}
+
+.tab-item:hover {
+    background-color: #121824;
+    color: #cbd5e1;
+}
+
+.tab-item.active {
+    background-color: #161b24;
+    color: #3b82f6;
+    font-weight: 600;
+    border-top: 2px solid #3b82f6;
+    height: calc(100% - 2px);
+}
+
+.tab-icon {
+    font-size: 12px;
+    margin-right: 8px;
+}
+
+.tab-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-right: 8px;
+    flex-grow: 1;
+}
+
+/* 關閉分頁與未儲存點點的智慧切換 */
+.tab-close-btn {
+    background: none;
+    border: none;
+    padding: 2px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    transition: background-color 0.15s ease;
+}
+
+.tab-close-btn:hover {
+    background-color: #2a3547;
+}
+
+.close-x {
+    font-size: 8px;
+    color: #64748b;
+    display: none; /* 預設隱藏 */
+}
+
+.tab-close-btn:hover .close-x {
+    color: #ef4444;
+}
+
+.dirty-indicator {
+    font-size: 8px;
+    color: #f59e0b; /* 未儲存點點用警告琥珀色 */
+}
+
+/* 未儲存狀態與 hover 狀態切換 */
+.tab-item.dirty .dirty-indicator {
+    display: inline;
+}
+
+.tab-item.dirty .close-x {
+    display: none;
+}
+
+/* Hover 時，一律將 dot 轉換為叉叉 */
+.tab-item:hover .close-x {
+    display: inline;
+}
+
+.tab-item:hover .dirty-indicator {
+    display: none !important;
+}
+
+/* 頂層新增按鈕 */
+.new-tab-btn {
+    background: none;
+    border: none;
+    color: #64748b;
+    font-size: 11px;
+    cursor: pointer;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    margin-left: 8px;
+}
+
+.new-tab-btn:hover {
+    background-color: #1e293b;
+    color: #cbd5e1;
+    transform: scale(1.05);
+}

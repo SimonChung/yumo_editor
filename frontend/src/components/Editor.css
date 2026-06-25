@@ -1,0 +1,164 @@
+.editor-container {
+    display: flex;
+    flex-grow: 1;
+    background-color: #161b24;
+    position: relative;
+    overflow: hidden;
+    height: calc(100vh - 95px); /* 100vh - menu(40px) - tabs(35px) - status(20px) */
+    text-align: left;
+}
+
+/* 行號欄 */
+.editor-gutter {
+    width: 48px;
+    background-color: #0f141c;
+    border-right: 1px solid #1a2332;
+    color: #475569;
+    padding: 16px 0;
+    text-align: right;
+    user-select: none;
+    overflow: hidden; /* 由 textarea 滾動同步，自身不顯示 scrollbar */
+    box-sizing: border-box;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Fira Code", monospace !important;
+    line-height: 1.5 !important;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+}
+
+.gutter-line {
+    padding-right: 10px;
+    height: inherit; /* 高度與外層配置的 lineHeight 保持一致 */
+}
+
+/* 編輯與高亮工作區 */
+.editor-workspace {
+    position: relative;
+    flex-grow: 1;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* 編輯輸入區 */
+.editor-textarea {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    color: transparent; /* 隱藏原生文字，由高亮層顯示 */
+    caret-color: #e2e8f0; /* 保持游標可見 */
+    border: none !important;
+    outline: none !important;
+    resize: none;
+    padding: 16px !important;
+    margin: 0 !important;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Fira Code", monospace !important;
+    box-sizing: border-box;
+    white-space: pre;
+    overflow: auto;
+    line-height: 1.5 !important;
+    font-weight: 400 !important;
+    letter-spacing: 0px !important;
+    word-spacing: 0px !important;
+    tab-size: 4;
+    -moz-tab-size: 4;
+    -webkit-tab-size: 4;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+    text-rendering: optimizeSpeed !important;
+    font-variant-ligatures: none !important;
+    font-feature-settings: "liga" 0, "clig" 0, "calt" 0 !important;
+    z-index: 2; /* 在上層以便接收輸入與滑鼠事件 */
+}
+
+/* 確保全選或反白時，背景有顏色但文字本身仍保持透明，使下層語法高亮能完美透出且對齊 */
+.editor-textarea::selection {
+    background: rgba(59, 130, 246, 0.25) !important;
+    color: transparent !important;
+}
+
+.editor-textarea::-moz-selection {
+    background: rgba(59, 130, 246, 0.25) !important;
+    color: transparent !important;
+}
+
+/* 高亮顯示層 */
+.editor-highlight-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: calc(100% - 8px) !important; /* 縮小 8px 以免捲動範圍被瀏覽器在最大位置截斷 */
+    height: calc(100% - 8px) !important; /* 縮小 8px 以免捲動範圍被瀏覽器在最大位置截斷 */
+    margin: 0 !important;
+    padding: 16px !important;
+    box-sizing: border-box;
+    pointer-events: none; /* 穿透滑鼠點擊，確保 textarea 正常選取 */
+    background: transparent !important; /* 覆蓋 Prism 的背景 */
+    border: none !important; /* 強制移除邊框，避免 1px 偏移 */
+    outline: none !important;
+    box-shadow: none !important;
+    overflow: hidden !important; /* 保持隱藏以防瀏覽器在含有溢出捲軸時對 pre 內文字做水平位移擠壓 */
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Fira Code", monospace !important;
+    white-space: pre !important;
+    line-height: 1.5 !important;
+    font-weight: 400 !important;
+    letter-spacing: 0px !important;
+    word-spacing: 0px !important;
+    tab-size: 4 !important;
+    -moz-tab-size: 4 !important;
+    -webkit-tab-size: 4 !important;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+    text-rendering: optimizeSpeed !important;
+    font-variant-ligatures: none !important;
+    font-feature-settings: "liga" 0, "clig" 0, "calt" 0 !important;
+    z-index: 1; /* 在下層 */
+}
+
+/* 覆蓋 Prism theme 內的 code 與所有子元素(如 span token)預設樣式，確保幾何結構完全一致 */
+.editor-highlight-overlay code,
+.editor-highlight-overlay * {
+    padding: 0 !important;
+    margin: 0 !important;
+    background: none !important;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    text-shadow: none !important; /* 移除 text-shadow 防止渲染寬度微小偏移 */
+    font-family: inherit !important;
+    font-size: inherit !important;
+    line-height: inherit !important;
+    font-weight: inherit !important;
+    letter-spacing: inherit !important;
+    word-spacing: inherit !important;
+    text-transform: inherit !important;
+    white-space: inherit !important;
+    tab-size: inherit !important;
+    -moz-tab-size: inherit !important;
+    -webkit-tab-size: inherit !important;
+    -webkit-font-smoothing: inherit !important;
+    -moz-osx-font-smoothing: inherit !important;
+    text-rendering: inherit !important;
+    font-variant-ligatures: inherit !important;
+    font-feature-settings: inherit !important;
+}
+
+/* 自訂 textarea 捲軸 */
+.editor-textarea::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.editor-textarea::-webkit-scrollbar-track {
+    background: #111620;
+}
+
+.editor-textarea::-webkit-scrollbar-thumb {
+    background: #2d384e;
+    border-radius: 4px;
+}
+
+.editor-textarea::-webkit-scrollbar-thumb:hover {
+    background: #3b82f6;
+}

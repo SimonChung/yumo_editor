@@ -30,3 +30,11 @@ go.work.sum
 # Editor/IDE
 # .idea/
 # .vscode/
+
+/.task
+/build/bin
+/frontend/dist
+/frontend/node_modules
+/frontend/package-lock.json
+/spec
+/TASKS.md
