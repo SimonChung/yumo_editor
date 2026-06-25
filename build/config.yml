@@ -1,0 +1,12 @@
+# Wails v3 Application Configuration
+# 此檔案取代 Wails v2 的 wails.json，用於定義應用程式的元資料
+
+name: "YuMo Editor"
+description: "A lightweight code editor built with Wails v3"
+productName: "YuMo Editor"
+identifier: "tw.ybak.yumo.editor"
+version: "0.1.0"
+
+author:
+  name: "simon.chung.tw"
+  email: "simon.chung.tw@gmail.com"
