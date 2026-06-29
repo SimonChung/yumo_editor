@@ -51,7 +51,7 @@ tasks:
       - task: generate:syso
       - go build {{if eq OS "windows"}}-ldflags="-H=windowsgui"{{end}} -o {{.BIN_DIR}}/{{.APP_NAME}}{{exeExt}} .
 
-  package:windows:
+  windows:package:
     desc: "Package the application into a Windows installer (requires NSIS)"
     deps:
       - build
@@ -62,22 +62,33 @@ tasks:
       - powershell -Command "if (!(Test-Path tmp/MicrosoftEdgeWebview2Setup.exe)) { curl.exe -L -o tmp/MicrosoftEdgeWebview2Setup.exe 'https://go.microsoft.com/fwlink/p/?LinkId=2124703' }"
       - makensis -DARG_WAILS_AMD64_BINARY=..\\..\\bin\\{{.APP_NAME}}.exe project.nsi
 
-  package:darwin:
+  darwin:package:
     desc: "Package the application into a macOS App Bundle"
+    deps:
+      - build
     platforms: [darwin]
     cmds:
-      - wails3 package
+      - wails3 generate icons -input build/appicon.png -macfilename build/darwin/icons.icns
+      - wails3 update build-assets -name "{{.APP_NAME}}" -binaryname "{{.APP_NAME}}" -productname "YuMo Editor" -productidentifier "tw.ybak.yumo.editor" -productversion "0.1.0" -productdescription "A lightweight code editor built with Wails v3" -productcopyright "© 2026, simon.chung.tw" -dir build
+      - mkdir -p "{{.BIN_DIR}}/{{.APP_NAME}}.app/Contents/MacOS"
+      - mkdir -p "{{.BIN_DIR}}/{{.APP_NAME}}.app/Contents/Resources"
+      - cp build/darwin/icons.icns "{{.BIN_DIR}}/{{.APP_NAME}}.app/Contents/Resources"
+      - cp "{{.BIN_DIR}}/{{.APP_NAME}}" "{{.BIN_DIR}}/{{.APP_NAME}}.app/Contents/MacOS"
+      - cp build/darwin/Info.plist "{{.BIN_DIR}}/{{.APP_NAME}}.app/Contents"
+      - codesign --force --deep --sign - "{{.BIN_DIR}}/{{.APP_NAME}}.app"
 
-  package:linux:
+  linux:package:
     desc: "Package the application for Linux"
+    deps:
+      - build
     platforms: [linux]
     cmds:
-      - wails3 package
+      - echo "Linux packaging is not yet fully configured in this unified Taskfile."
 
   package:
     desc: "Package the application for the current platform"
     cmds:
-      - task: package:{{OS}}
+      - task: "{{OS}}:package"
 
   dev:
     desc: "Run in development mode with hot-reload"
