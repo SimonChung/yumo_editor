@@ -4,6 +4,7 @@ import { Tab } from './types';
 import { MenuBar } from './components/MenuBar';
 import { TabList } from './components/TabList';
 import { Editor } from './components/Editor';
+import { MarkdownWorkspace } from './components/MarkdownWorkspace';
 import { StatusBar } from './components/StatusBar';
 
 // 匯入 Wails v3 自動生成的 Go 橋接方法
@@ -38,6 +39,8 @@ function App() {
         if (ext === 'py') return 'python';
         return 'plaintext';
     };
+
+    const isMarkdownFile = (fileName: string) => /\.md(?:own)?$/i.test(fileName);
 
     // 4. 新建空白分頁 (New File)
     const handleNewFile = () => {
@@ -294,12 +297,20 @@ function App() {
 
             {/* 3. 編輯主區域 */}
             {activeTab ? (
-                <Editor
-                    content={activeTab.content}
-                    onChange={handleContentChange}
-                    fontSize={fontSize}
-                    language={getLanguage(activeTab.name)}
-                />
+                isMarkdownFile(activeTab.name) ? (
+                    <MarkdownWorkspace
+                        content={activeTab.content}
+                        onChange={handleContentChange}
+                        fontSize={fontSize}
+                    />
+                ) : (
+                    <Editor
+                        content={activeTab.content}
+                        onChange={handleContentChange}
+                        fontSize={fontSize}
+                        language={getLanguage(activeTab.name)}
+                    />
+                )
             ) : (
                 <div className="no-active-tab-fallback">
                     <div className="fallback-card">

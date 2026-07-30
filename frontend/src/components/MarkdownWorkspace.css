@@ -1,0 +1,151 @@
+.markdown-workspace {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    flex-direction: column;
+    background: #161b24;
+}
+
+.markdown-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    gap: 6px;
+    padding: 6px 12px;
+    background: #0f141c;
+    border-bottom: 1px solid #1a2332;
+}
+
+.markdown-view-button {
+    border: 1px solid #334155;
+    border-radius: 4px;
+    padding: 4px 9px;
+    color: #cbd5e1;
+    background: #1e293b;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.markdown-view-button:hover,
+.markdown-view-button.active {
+    border-color: #3b82f6;
+    background: #1d4ed8;
+    color: #fff;
+}
+
+.markdown-content {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+}
+
+.markdown-editor-pane,
+.markdown-preview-pane {
+    min-width: 0;
+    min-height: 0;
+    flex: 1 1 0;
+}
+
+.markdown-pane-divider {
+    width: 1px;
+    flex: 0 0 1px;
+    background: #1a2332;
+}
+
+.markdown-preview-pane {
+    box-sizing: border-box;
+    overflow: auto;
+    padding: 20px 28px 40px;
+    color: #dbe4ef;
+    line-height: 1.65;
+    text-align: left;
+    overflow-wrap: break-word;
+}
+
+.markdown-preview-pane > :first-child {
+    margin-top: 0;
+}
+
+.markdown-preview-pane h1,
+.markdown-preview-pane h2,
+.markdown-preview-pane h3,
+.markdown-preview-pane h4,
+.markdown-preview-pane h5,
+.markdown-preview-pane h6 {
+    color: #f8fafc;
+    line-height: 1.25;
+    margin: 1.5em 0 0.65em;
+}
+
+.markdown-preview-pane h1,
+.markdown-preview-pane h2 {
+    border-bottom: 1px solid #334155;
+    padding-bottom: 0.3em;
+}
+
+.markdown-preview-pane a {
+    color: #60a5fa;
+}
+
+.markdown-preview-pane code {
+    padding: 0.15em 0.35em;
+    border-radius: 4px;
+    background: #0f141c;
+    color: #f8fafc;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.markdown-preview-pane pre {
+    overflow: auto;
+    padding: 14px;
+    border: 1px solid #263448;
+    border-radius: 6px;
+    background: #0f141c;
+}
+
+.markdown-preview-pane pre code {
+    padding: 0;
+    background: transparent;
+}
+
+.markdown-preview-pane blockquote {
+    margin-left: 0;
+    padding-left: 1em;
+    border-left: 4px solid #3b82f6;
+    color: #94a3b8;
+}
+
+.markdown-preview-pane table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.markdown-preview-pane th,
+.markdown-preview-pane td {
+    padding: 0.5em 0.75em;
+    border: 1px solid #334155;
+}
+
+.markdown-preview-pane th {
+    background: #1e293b;
+}
+
+.markdown-preview-pane img {
+    max-width: 100%;
+}
+
+@media (max-width: 760px) {
+    .markdown-content-split {
+        flex-direction: column;
+    }
+
+    .markdown-content-split .markdown-editor-pane,
+    .markdown-content-split .markdown-preview-pane {
+        min-height: 50%;
+    }
+
+    .markdown-content-split .markdown-pane-divider {
+        width: auto;
+        height: 1px;
+        flex-basis: 1px;
+    }
+}

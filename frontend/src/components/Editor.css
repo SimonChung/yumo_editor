@@ -8,6 +8,10 @@
     text-align: left;
 }
 
+.editor-container-embedded {
+    height: 100%;
+}
+
 /* 行號欄 */
 .editor-gutter {
     width: 48px;
