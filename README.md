@@ -1,28 +1,139 @@
-# 玉墨-文字編輯器 (YuMo Editor)
+# 玉墨（YuMo Editor）
 
-## 簡介
-玉墨-文字編輯器是一款專注於文字編輯的輕量級編輯器，旨在提供簡單、快速且高效的文字編輯體驗。無論是撰寫文章、筆記，還是進行程式碼編輯，玉墨都能滿足您的需求。
+玉墨是一個以 Go、Wails v3 與 React 製作的跨平台文字與程式碼編輯器。它提供輕量的多分頁編輯體驗，並內建 Markdown 即時預覽，適合撰寫筆記、文件與小型程式碼檔案。
 
-### 功能特色
-- **簡潔界面**：直觀的用戶界面，讓您專注於文字內容，而非繁瑣的操作。
-- **多平台支持**：支援 Windows、macOS 和 Linux，讓您在不同設備上都能享受一致的編輯體驗。
-- **高效性能**：輕量級設計，啟動快速，佔用資源少，適合長時間使用。
-- **多種格式支持**：支援多種文字格式，包括純文字、Markdown、HTML 等，方便您進行不同類型的編輯工作。
-- **自定義快捷鍵**：提供靈活的快捷鍵設置，讓您根據個人習慣快速操作，提高工作效率。
+## 功能
 
-### 安裝與使用
-1. 下載最新版本的玉墨-文字編輯器安裝包，根據您的操作系統選擇相應的版本。
-2. 安裝完成後，啟動玉墨-文字編輯器，即可開始您的文字編輯之旅。
+### 檔案與分頁
 
-### 系統架構
-玉墨-文字編輯器採用 Go 1.26+ 與 Wails v3 做為開發架構基礎。
+- 新增、開啟、儲存、另存新檔與關閉分頁。
+- 同時開啟多個檔案；再次開啟已載入的檔案時會切換至既有分頁。
+- 未儲存的分頁會顯示修改狀態，關閉前會要求確認。
+- 內建檔案選擇與儲存對話框。
+- 偵測二進位檔，避免誤以文字模式開啟。
 
-### 開發與貢獻
-玉墨-文字編輯器是一個開源專案，歡迎開發者參與貢獻。您可以在 GitHub 上找到程式碼，提交問題報告、功能建議或直接參與程程式開發。
+### 編輯體驗
 
-### 聯繫與支持
-如有任何問題或建議，請通過以下方式與我們聯繫：
-- GitHub Issues: [https://github.com/yumo-editor/yumo-editor/issues](https://github.com/yumo-editor/yumo-editor/issues)
+- 行號欄與編輯區同步捲動。
+- Go、PHP、Python 的語法著色。
+- 字型縮放：`Ctrl` + `+`、`Ctrl` + `-`、`Ctrl` + `0`。
+- 支援常用快捷鍵：
+  - `Ctrl` + `N`：新增檔案
+  - `Ctrl` + `O`：開啟檔案
+  - `Ctrl` + `S`：儲存
+  - `Ctrl` + `Shift` + `S`：另存新檔
+  - `Ctrl` + `W`：關閉目前分頁
 
-## License
-玉墨編輯器遵循 MIT 許可證，您可以自由使用、修改和分發本軟件，詳情請參閱 [LICENSE](./LICENSE) 文件。
+### Markdown 即時預覽
+
+開啟副檔名為 `.md` 或 `.markdown` 的檔案時，預設顯示左側編輯、右側即時預覽。每次修改 Markdown 內容後，預覽會立即更新。
+
+- 可在「編輯」、「分割預覽」與「預覽」三種模式間切換。
+- 支援 GitHub Flavored Markdown（標題、清單、表格、連結、圖片、程式碼區塊、引用等）。
+- 預覽輸出會先經過 HTML 淨化處理，避免不安全內容注入應用程式頁面。
+- 窄螢幕時，分割畫面會自動改為上下排列。
+
+### 編碼支援
+
+- 開啟檔案時自動嘗試辨識 UTF-8、Big5 與 GBK。
+- 可在狀態列選擇以 UTF-8、Big5 或 GBK 儲存。
+- 狀態列顯示目前檔案路徑、行數、字元數、字型大小與編碼。
+
+## 技術架構
+
+- 後端：Go 1.26+
+- 桌面框架：Wails v3
+- 前端：React、TypeScript、Vite
+- 語法著色：PrismJS
+- Markdown：Marked + DOMPurify
+
+## 開發環境需求
+
+- Go 1.26 或以上
+- Node.js 與 npm
+- Wails v3 CLI
+- Windows 平台需安裝 WebView2 Runtime
+
+安裝 Wails CLI：
+
+```powershell
+go install github.com/wailsapp/wails/v3/cmd/wails3@latest
+```
+
+若要執行完整編譯流程，另需安裝 [Task](https://taskfile.dev/)：
+
+```powershell
+go install github.com/go-task/task/v3/cmd/task@latest
+```
+
+## 執行開發模式
+
+首次執行或更新前端相依套件後，先安裝前端套件：
+
+```powershell
+cd frontend
+npm install
+cd ..
+```
+
+接著從專案根目錄啟動 Wails 開發模式：
+
+```powershell
+wails3 dev
+```
+
+若 `wails3` 尚未加入 PATH，可在 Windows 使用：
+
+```powershell
+& "$env:USERPROFILE\go\bin\wails3.exe" dev
+```
+
+> 請不要使用 `go run main.go` 作為日常開發方式。此專案需要 Wails 同時啟動桌面 WebView 與 React 前端，應使用 `wails3 dev`。
+
+## 建置與驗證
+
+建立發行版：
+
+```powershell
+task build
+```
+
+單獨建置前端：
+
+```powershell
+cd frontend
+npm run build
+```
+
+執行後端測試與靜態分析：
+
+```powershell
+go test ./...
+go vet ./...
+```
+
+重新產生前後端繫結：
+
+```powershell
+wails3 generate bindings
+```
+
+## 專案結構
+
+```text
+.
+├── app.go                  # Wails 對前端公開的檔案操作 API
+├── main.go                 # 桌面應用程式進入點
+├── internal/
+│   ├── editor/             # 文件內容與修改狀態模型
+│   └── fs/                 # 讀寫檔案、編碼偵測與二進位檔判斷
+├── frontend/
+│   └── src/
+│       ├── components/     # 編輯器、分頁、選單、狀態列與 Markdown 預覽
+│       └── App.tsx         # 前端分頁與檔案操作流程
+└── Taskfile.yml            # 開發、建置與驗證工作
+```
+
+## 授權
+
+本專案採用 [MIT License](LICENSE)。
