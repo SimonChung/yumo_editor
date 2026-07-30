@@ -20,9 +20,10 @@ interface EditorProps {
     onChange: (value: string) => void;
     fontSize: number;
     language: string;
+    embedded?: boolean;
 }
 
-export const Editor: React.FC<EditorProps> = ({ content, onChange, fontSize, language }) => {
+export const Editor: React.FC<EditorProps> = ({ content, onChange, fontSize, language, embedded = false }) => {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const gutterRef = useRef<HTMLDivElement>(null);
     const overlayRef = useRef<HTMLPreElement>(null);
@@ -100,7 +101,7 @@ export const Editor: React.FC<EditorProps> = ({ content, onChange, fontSize, lan
     const highlighted = getHighlightedContent(content, language);
 
     return (
-        <div className="editor-container">
+        <div className={`editor-container ${embedded ? 'editor-container-embedded' : ''}`}>
             {/* 行號區域 */}
             <div 
                 className="editor-gutter" 
