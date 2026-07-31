@@ -5,6 +5,7 @@ import { MenuBar } from './components/MenuBar';
 import { TabList } from './components/TabList';
 import { Editor } from './components/Editor';
 import { MarkdownWorkspace } from './components/MarkdownWorkspace';
+import { SvgWorkspace } from './components/SvgWorkspace';
 import { StatusBar } from './components/StatusBar';
 
 // 匯入 Wails v3 自動生成的 Go 橋接方法
@@ -37,10 +38,12 @@ function App() {
         if (ext === 'go') return 'go';
         if (ext === 'php') return 'php';
         if (ext === 'py') return 'python';
+        if (ext === 'svg' || ext === 'html') return 'markup';
         return 'plaintext';
     };
 
     const isMarkdownFile = (fileName: string) => /\.md(?:own)?$/i.test(fileName);
+    const isSvgFile = (fileName: string) => /\.svg$/i.test(fileName);
 
     // 4. 新建空白分頁 (New File)
     const handleNewFile = () => {
@@ -299,6 +302,12 @@ function App() {
             {activeTab ? (
                 isMarkdownFile(activeTab.name) ? (
                     <MarkdownWorkspace
+                        content={activeTab.content}
+                        onChange={handleContentChange}
+                        fontSize={fontSize}
+                    />
+                ) : isSvgFile(activeTab.name) ? (
+                    <SvgWorkspace
                         content={activeTab.content}
                         onChange={handleContentChange}
                         fontSize={fontSize}

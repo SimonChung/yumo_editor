@@ -75,7 +75,7 @@ func (a *App) SelectFile() (string, error) {
 	path, err := a.app.Dialog.OpenFileWithOptions(&application.OpenFileDialogOptions{
 		Title: "選擇要開啟的檔案",
 		Filters: []application.FileFilter{
-			{DisplayName: "文字與程式碼檔案 (*.txt;*.md;*.go;*.js;*.ts;*.json;*.css;*.html)", Pattern: "*.txt;*.md;*.go;*.js;*.ts;*.json;*.css;*.html"},
+			{DisplayName: "文字與程式碼檔案 (*.txt;*.md;*.go;*.js;*.ts;*.json;*.css;*.html;*.svg)", Pattern: "*.txt;*.md;*.go;*.js;*.ts;*.json;*.css;*.html"},
 			{DisplayName: "所有檔案 (*.*)", Pattern: "*.*"},
 		},
 	}).PromptForSingleSelection()
@@ -96,6 +96,7 @@ func (a *App) SelectSaveFile(defaultName string) (string, error) {
 		Filters: []application.FileFilter{
 			{DisplayName: "文字檔案 (*.txt)", Pattern: "*.txt"},
 			{DisplayName: "Markdown 檔案 (*.md)", Pattern: "*.md"},
+			{DisplayName: "SVG 檔案 (*.svg)", Pattern: "*.svg"},
 			{DisplayName: "所有檔案 (*.*)", Pattern: "*.*"},
 		},
 	}).PromptForSingleSelection()
