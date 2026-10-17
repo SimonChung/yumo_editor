@@ -19,10 +19,11 @@ tasks:
     dir: frontend
     sources:
       - package.json
+      - package-lock.json
     generates:
       - node_modules/.package-lock.json
     cmds:
-      - npm install
+      - npm ci
 
   build:frontend:
     desc: "Build the frontend"
@@ -30,11 +31,15 @@ tasks:
     deps:
       - install:frontend:deps
     cmds:
+      - task: generate:bindings
       - npm run build
 
   generate:bindings:
     desc: "Generate Wails v3 bindings"
     cmds:
+      - node build/check-wails.mjs
+      # Go embeds dist; a clean checkout needs a placeholder before binding analysis.
+      - node -e "const fs=require('node:fs'); fs.mkdirSync('frontend/dist',{recursive:true}); if(!fs.existsSync('frontend/dist/index.html')) fs.writeFileSync('frontend/dist/index.html','');"
       - wails3 generate bindings
 
   generate:syso:
@@ -45,11 +50,13 @@ tasks:
 
   build:
     desc: "Build the application"
+    env:
+      GOARCH: '{{if eq OS "windows"}}amd64{{else}}{{ARCH}}{{end}}'
     deps:
       - build:frontend
     cmds:
       - task: generate:syso
-      - go build {{if eq OS "windows"}}-ldflags="-H=windowsgui"{{end}} -o {{.BIN_DIR}}/{{.APP_NAME}}{{exeExt}} .
+      - go build -tags production -trimpath {{if eq OS "windows"}}-ldflags="-s -w -H=windowsgui"{{else}}-ldflags="-s -w"{{end}} -o "{{.BIN_DIR}}/{{.APP_NAME}}{{exeExt}}" .
 
   windows:package:
     desc: "Package the application into a Windows installer (requires NSIS)"
@@ -57,10 +64,12 @@ tasks:
       - build
     platforms: [windows]
     dir: build/windows/installer
+    preconditions:
+      - sh: makensis -VERSION
+        msg: "Install NSIS 3 and add makensis to PATH, or use build.bat."
     cmds:
-      - powershell -Command "if (!(Test-Path tmp)) { New-Item -ItemType Directory -Force -Path tmp }"
-      - powershell -Command "if (!(Test-Path tmp/MicrosoftEdgeWebview2Setup.exe)) { curl.exe -L -o tmp/MicrosoftEdgeWebview2Setup.exe 'https://go.microsoft.com/fwlink/p/?LinkId=2124703' }"
-      - makensis -DARG_WAILS_AMD64_BINARY=..\\..\\bin\\{{.APP_NAME}}.exe project.nsi
+      - wails3 generate webview2bootstrapper -dir .
+      - makensis -DARG_WAILS_AMD64_BINARY="..\\..\\bin\\{{.APP_NAME}}.exe" project.nsi
 
   darwin:package:
     desc: "Package the application into a macOS App Bundle"
@@ -98,18 +107,12 @@ tasks:
   clean:
     desc: "Clean build artifacts"
     cmds:
-      - cmd: rm -rf {{.BIN_DIR}}
-        ignore_error: true
-      - cmd: rm -rf frontend/dist
-        ignore_error: true
+      - node build/clean.mjs
 
   clean:frontend:deps:
-    desc: "Clean frontend node_modules and package-lock.json"
+    desc: "Clean frontend node_modules, preserving the dependency lockfile"
     cmds:
-      - cmd: rm -rf frontend/node_modules
-        ignore_error: true
-      - cmd: rm -rf frontend/package-lock.json
-        ignore_error: true
+      - node build/clean.mjs --deps-only
 
   clean:all:
     desc: "Clean all build artifacts and frontend node_modules"

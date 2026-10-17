@@ -1,92 +1,96 @@
 @echo off
-setlocal enabledelayedexpansion
+setlocal EnableExtensions DisableDelayedExpansion
 
-:: Windows Build Script (converted from Makefile.win)
-set BINARY_NAME=yumo_editor.exe
+rem Always run relative to this script, including when called from another folder.
+pushd "%~dp0" || exit /b 1
+set "RESULT=0"
+set "TARGET=%~1"
+if not defined TARGET set "TARGET=build_installer"
 
-:: Detect task executable
+if /i "%TARGET%"=="help" goto usage
+if /i "%TARGET%"=="--help" goto usage
+if /i "%TARGET%"=="all" set "TARGET=build_installer"
+if /i "%TARGET%"=="build-installer" set "TARGET=build_installer"
+if /i "%TARGET%"=="clean-all" set "TARGET=clean_all"
+if /i "%TARGET%"=="build" goto prepare
+if /i "%TARGET%"=="build_installer" goto prepare
+if /i "%TARGET%"=="dev" goto prepare
+if /i "%TARGET%"=="clean" goto prepare
+if /i "%TARGET%"=="clean_all" goto prepare
+echo [ERROR] Unknown target: "%TARGET%"
+set "RESULT=1"
+goto usage
+
+:prepare
+rem Make fallback tools available to child Task processes as well.
+set "PATH=%PATH%;%USERPROFILE%\go\bin;%ProgramFiles(x86)%\NSIS;%ProgramFiles(x86)%\NSIS\Bin;%ProgramFiles%\NSIS;%ProgramFiles%\NSIS\Bin"
 where task >nul 2>nul
-if %errorlevel% equ 0 (
-    set TASK_CMD=task
-) else if exist "%USERPROFILE%\go\bin\task.exe" (
-    set TASK_CMD="%USERPROFILE%\go\bin\task.exe"
-) else (
-    echo [WARNING] 'task' command not found on PATH or in %%USERPROFILE%%\go\bin.
-    echo Please install it via: go install github.com/go-task/task/v3/cmd/task@latest
-    set TASK_CMD=task
+if errorlevel 1 (
+    echo [ERROR] Task is missing. Install: go install github.com/go-task/task/v3/cmd/task@latest
+    set "RESULT=1"
+    goto end
 )
-
-:: Detect wails3 executable
-where wails3 >nul 2>nul
-if %errorlevel% equ 0 (
-    set WAILS_CMD=wails3
-) else if exist "%USERPROFILE%\go\bin\wails3.exe" (
-    set WAILS_CMD="%USERPROFILE%\go\bin\wails3.exe"
-) else (
-    echo [WARNING] 'wails3' command not found on PATH or in %%USERPROFILE%%\go\bin.
-    set WAILS_CMD=wails3
+where node >nul 2>nul
+if errorlevel 1 (
+    echo [ERROR] Node.js is missing. Install Node.js 22.12+ or 24 LTS.
+    set "RESULT=1"
+    goto end
 )
-
-:: Handle arguments
-set TARGET=%~1
-if "%TARGET%"=="" set TARGET=build
-
-if /i "%TARGET%"=="all" goto do_build
-if /i "%TARGET%"=="build" goto do_build
-if /i "%TARGET%"=="build_installer" goto do_build_installer
-if /i "%TARGET%"=="build-installer" goto do_build_installer
-if /i "%TARGET%"=="dev" goto do_dev
 if /i "%TARGET%"=="clean" goto do_clean
 if /i "%TARGET%"=="clean_all" goto do_clean_all
-if /i "%TARGET%"=="clean-all" goto do_clean_all
-
-echo Unknown target: %TARGET%
-echo Usage: %~nx0 [build ^| build_installer ^| dev ^| clean ^| clean_all]
-exit /b 1
+for %%T in (go npm wails3) do (
+    where %%T >nul 2>nul
+    if errorlevel 1 (
+        echo [ERROR] Required tool %%T is missing. See README.md for setup.
+        set "RESULT=1"
+        goto end
+    )
+)
+if /i "%TARGET%"=="dev" goto do_dev
+if /i "%TARGET%"=="build" goto do_build
+where makensis >nul 2>nul
+if errorlevel 1 (
+    echo [ERROR] NSIS 3 is missing. Install NSIS and retry.
+    set "RESULT=1"
+    goto end
+)
+echo [installer] Building Windows amd64 application and installer...
+task windows:package
+set "RESULT=%ERRORLEVEL%"
+if not "%RESULT%"=="0" goto end
+if not exist "build\bin\yumo_editor-amd64-installer.exe" (
+    echo [ERROR] Installer output is missing.
+    set "RESULT=1"
+    goto end
+)
+echo [OK] Installer: %~dp0build\bin\yumo_editor-amd64-installer.exe
+goto end
 
 :do_build
-echo [build] Running: %TASK_CMD% build
-%TASK_CMD% build
-if %errorlevel% neq 0 (
-    echo [ERROR] Build failed!
-    exit /b %errorlevel%
-)
+task build
+set "RESULT=%ERRORLEVEL%"
 goto end
 
 :do_dev
-echo [dev] Running: %WAILS_CMD% dev
-%WAILS_CMD% dev
-if %errorlevel% neq 0 (
-    echo [ERROR] Dev mode failed to start!
-    exit /b %errorlevel%
-)
+wails3 dev
+set "RESULT=%ERRORLEVEL%"
 goto end
 
 :do_clean
-echo [clean] Running: %TASK_CMD% clean
-%TASK_CMD% clean
-if %errorlevel% neq 0 (
-    echo [ERROR] Clean failed!
-    exit /b %errorlevel%
-)
+task clean
+set "RESULT=%ERRORLEVEL%"
 goto end
 
 :do_clean_all
-echo [clean_all] Running: %TASK_CMD% clean:all
-%TASK_CMD% clean:all
-if %errorlevel% neq 0 (
-    echo [ERROR] Clean all failed!
-    exit /b %errorlevel%
-)
-:do_build_installer
-echo [build_installer] Running: %TASK_CMD% package
-%TASK_CMD% package
-if %errorlevel% neq 0 (
-    echo [ERROR] Installer build failed!
-    exit /b %errorlevel%
-)
+task clean:all
+set "RESULT=%ERRORLEVEL%"
 goto end
 
+:usage
+echo Usage: %~nx0 [build_installer ^| build ^| dev ^| clean ^| clean_all]
+echo Default / all: build the application and Windows NSIS installer.
+echo build: executable only. clean_all: also remove node_modules; keep the lockfile.
+
 :end
-echo Execution completed successfully.
-exit /b 0
+popd
+exit /b %RESULT%
