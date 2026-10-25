@@ -1,0 +1,10 @@
+const fs=require('node:fs');
+const path=require('node:path');
+const {spawnSync}=require('node:child_process');
+const deps=process.env.YUMO_DEPS_DIR||'/opt/yumo-deps';
+const target=path.join(process.cwd(),'frontend/node_modules');
+const created=!fs.existsSync(target);
+if(created)fs.symlinkSync(path.join(deps,'node_modules'),target,'dir');
+const result=spawnSync(process.execPath,[path.join(deps,'node_modules/typescript/bin/tsc'),'--noEmit'],{cwd:path.join(process.cwd(),'frontend'),stdio:'inherit'});
+if(created)fs.unlinkSync(target);
+process.exit(result.status??1);
