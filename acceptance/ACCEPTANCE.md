@@ -5,7 +5,7 @@ The original project is not the worker workspace and must not be modified.
 
 ## Required behavior
 
-- The existing Windows installer registers a file action named `以 YuMo Editor 編輯` for all files, with a quoted executable and quoted `%1` argument. Uninstall removes its own context-menu key. The Chinese caption must survive the existing Windows NSIS build.
+- The existing Windows installer registers a file action named `以 YuMo Editor 編輯` for all files, with a quoted executable and quoted `%1` argument. Uninstall removes its own context-menu key. Save `build/windows/installer/project.nsi` as UTF-8 with BOM: the existing Windows NSIS invocation uses ACP without a BOM and rejects the UTF-8 Chinese caption. Do not change the build entrypoint to work around this.
 - Public bridge for this task: `App.GetStartupFiles() []string` returns a copy of the command-line file arguments, empty when none. Preserve paths with Chinese characters and spaces. Invalid paths are handled by the existing frontend `OpenFile` error path, which reports an error and continues other files.
 - Frontend startup calls `GetStartupFiles`, feeds the returned paths into the existing guarded open flow, and preserves drag/drop, deduplication, unsaved documents, encoding-aware saves, and React StrictMode behavior.
 - The Wails generated binding must correspond to the real Go method. Use the pinned beta.30 API. Windows `build.bat build-installer` regenerates bindings and must still compile.

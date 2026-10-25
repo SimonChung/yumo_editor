@@ -84,6 +84,7 @@ test('startup followed by native drop preserves dirty content',async()=>{
 });
 test('installer source registers quoted command and uninstall cleanup',async()=>{
   const nsi=fs.readFileSync(path.join(rootDir,'build/windows/installer/project.nsi'),'utf8');
+  assert.equal(nsi.charCodeAt(0),0xFEFF,'NSIS source needs a UTF-8 BOM for the existing Windows ACP invocation');
   assert.match(nsi,/WriteRegStr\s+SHELL_CONTEXT\s+"Software\\Classes\\\*\\shell\\[^"\\]+"\s+""\s+"以 YuMo Editor 編輯"/);
   assert.match(nsi,/WriteRegStr\s+SHELL_CONTEXT\s+"Software\\Classes\\\*\\shell\\[^"\\]+\\command"[^\n]+%1/);
   const command=nsi.split(/\r?\n/).find(l=>/WriteRegStr.*\\command.*%1/.test(l));
