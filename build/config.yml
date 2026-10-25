@@ -5,7 +5,7 @@ name: "YuMo Editor"
 description: "A lightweight code editor built with Wails v3"
 productName: "YuMo Editor"
 identifier: "tw.ybak.yumo.editor"
-version: "0.1.0"
+version: "0.2.0"
 
 author:
   name: "simon.chung.tw"
