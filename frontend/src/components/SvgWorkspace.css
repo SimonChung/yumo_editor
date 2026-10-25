@@ -1,0 +1,10 @@
+﻿.svg-workspace { display: flex; flex: 1; min-height: 0; flex-direction: column; background: #161b24; }
+.svg-toolbar { display: flex; justify-content: flex-end; gap: 6px; padding: 6px 12px; background: #0f141c; border-bottom: 1px solid #1a2332; }
+.svg-view-button { border: 1px solid #334155; border-radius: 4px; padding: 4px 9px; color: #cbd5e1; background: #1e293b; cursor: pointer; font-size: 12px; }
+.svg-view-button:hover, .svg-view-button.active { border-color: #3b82f6; background: #1d4ed8; color: #fff; }
+.svg-content { display: flex; flex: 1; min-height: 0; }
+.svg-editor-pane, .svg-preview-pane { min-width: 0; min-height: 0; flex: 1 1 0; }
+.svg-pane-divider { width: 1px; flex: 0 0 1px; background: #1a2332; }
+.svg-preview-pane { overflow: auto; padding: 20px; background-color: #f8fafc; background-image: linear-gradient(45deg, #e2e8f0 25%, transparent 25%), linear-gradient(-45deg, #e2e8f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #e2e8f0 75%), linear-gradient(-45deg, transparent 75%, #e2e8f0 75%); background-position: 0 0, 0 10px, 10px -10px, -10px 0; background-size: 20px 20px; }
+.svg-preview-frame { display: block; width: 100%; min-width: 100%; height: 100%; min-height: 100%; border: 0; background: transparent; }
+@media (max-width: 760px) { .svg-content-split { flex-direction: column; } .svg-content-split .svg-editor-pane, .svg-content-split .svg-preview-pane { min-height: 50%; } .svg-content-split .svg-pane-divider { width: auto; height: 1px; flex-basis: 1px; } }

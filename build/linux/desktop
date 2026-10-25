@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Name=YuMo Editor
+Comment=A lightweight code editor built with Wails v3
+# The Exec line includes %u to pass the URL to the application
+Exec=/usr/local/bin/yumo_editor %u
+Terminal=false
+Type=Application
+Icon=yumo_editor
+Categories=Utility;
+StartupWMClass=yumo_editor
+
+ 

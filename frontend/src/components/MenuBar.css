@@ -1,0 +1,151 @@
+.menu-bar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    height: 40px;
+    background-color: #161b24;
+    border-bottom: 1px solid #232c3d;
+    padding: 0 16px;
+    user-select: none;
+    position: relative;
+    z-index: 1000;
+}
+
+.menu-logo {
+    display: flex;
+    align-items: center;
+    margin-right: 24px;
+}
+
+.logo-icon {
+    font-size: 16px;
+    margin-right: 8px;
+}
+
+.logo-text {
+    font-weight: 700;
+    font-size: 14px;
+    color: #3b82f6;
+    letter-spacing: 0.5px;
+}
+
+.menu-items {
+    display: flex;
+    gap: 8px;
+}
+
+.menu-dropdown {
+    position: relative;
+}
+
+.menu-trigger {
+    background: none;
+    border: none;
+    color: #94a3b8;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.menu-trigger:hover,
+.menu-dropdown.active .menu-trigger {
+    background-color: #232c3d;
+    color: #f1f5f9;
+}
+
+.menu-options {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    background-color: rgba(22, 27, 36, 0.95);
+    backdrop-filter: blur(12px);
+    border: 1px solid #232c3d;
+    border-radius: 6px;
+    box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -4px rgba(0, 0, 0, 0.5);
+    min-width: 240px;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.menu-option {
+    display: flex;
+    align-items: center;
+    background: none;
+    border: none;
+    width: 100%;
+    padding: 8px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    color: #cbd5e1;
+    transition: all 0.15s ease;
+    font-size: 13px;
+    text-align: left;
+}
+
+.menu-option:hover {
+    background-color: #3b82f6;
+    color: #ffffff;
+}
+
+.menu-option:hover .option-shortcut {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.option-icon {
+    font-size: 14px;
+    margin-right: 10px;
+    width: 18px;
+    display: flex;
+    justify-content: center;
+}
+
+.option-label {
+    flex-grow: 1;
+}
+
+.option-shortcut {
+    font-size: 11px;
+    color: #64748b;
+    margin-left: 16px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.menu-divider {
+    height: 1px;
+    background-color: #232c3d;
+    margin: 4px 6px;
+}
+
+.menu-status-badge {
+    margin-left: auto;
+}
+
+.badge-text {
+    font-size: 11px;
+    background-color: #1e293b;
+    color: #64748b;
+    padding: 3px 8px;
+    border-radius: 20px;
+    border: 1px solid #334155;
+}
+
+/* Animations */
+.animate-fade-in {
+    animation: fadeIn 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
