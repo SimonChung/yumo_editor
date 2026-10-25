@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { Events } from '@wailsio/runtime';
 import './App.css';
 import { Tab } from './types';
 import { MenuBar } from './components/MenuBar';
@@ -12,25 +13,35 @@ import { StatusBar } from './components/StatusBar';
 // 注意: 執行 `wails3 generate bindings` 後，此路徑會自動更新至 frontend/bindings/ 下
 import { OpenFile, SaveFile, SelectFile, SelectSaveFile } from '../bindings/tw.ybak/yumo/app';
 
+const createUntitledTab = (number: number): Tab => ({
+    id: 'tab-' + Date.now() + '-' + Math.random().toString(36).substring(2, 9),
+    name: `Untitled-${number}`,
+    path: '',
+    content: '',
+    isDirty: false,
+    encoding: 'UTF-8',
+});
+
+const getBaseName = (path: string) => path.replace(/^.*[\\/]/, '');
+
 function App() {
     // 1. 核心狀態
-    const [tabs, setTabs] = useState<Tab[]>([]);
-    const [activeTabId, setActiveTabId] = useState<string>('');
+    const initialTabRef = useRef<Tab | null>(null);
+    if (!initialTabRef.current) initialTabRef.current = createUntitledTab(1);
+    const [tabs, setTabs] = useState<Tab[]>(() => [initialTabRef.current!]);
+    const [activeTabId, setActiveTabId] = useState<string>(() => initialTabRef.current!.id);
     const [fontSize, setFontSize] = useState<number>(16);
-    const [untitledCounter, setUntitledCounter] = useState<number>(1);
+    const [untitledCounter, setUntitledCounter] = useState<number>(2);
+    const tabsRef = useRef<Tab[]>(tabs);
+    const pendingPathsRef = useRef<Set<string>>(new Set());
 
-    // 2. 初始化：預設開啟一個空白分頁
-    useEffect(() => {
-        handleNewFile();
+    const replaceTabs = useCallback((next: Tab[]) => {
+        tabsRef.current = next;
+        setTabs(next);
     }, []);
 
     // 3. 當前選中的分頁物件
     const activeTab = tabs.find((t) => t.id === activeTabId);
-
-    // 取得檔案路徑的檔名
-    const getBaseName = (path: string) => {
-        return path.replace(/^.*[\\/]/, '');
-    };
 
     // 偵測檔案語言類型
     const getLanguage = (fileName: string) => {
@@ -47,20 +58,74 @@ function App() {
 
     // 4. 新建空白分頁 (New File)
     const handleNewFile = () => {
-        const id = 'tab-' + Date.now() + '-' + Math.random().toString(36).substring(2, 9);
-        const name = `Untitled-${untitledCounter}`;
-        const newTab: Tab = {
-            id,
-            name,
-            path: '',
-            content: '',
-            isDirty: false,
-            encoding: 'UTF-8',
-        };
-        setTabs((prev) => [...prev, newTab]);
-        setActiveTabId(id);
+        const newTab = createUntitledTab(untitledCounter);
+        replaceTabs([...tabsRef.current, newTab]);
+        setActiveTabId(newTab.id);
         setUntitledCounter((prev) => prev + 1);
     };
+
+    // 選單與原生拖放共用同一條開檔流程，確保路徑去重及未儲存內容不被重讀覆寫。
+    const openPath = useCallback(async (path: string) => {
+        if (!path) return;
+
+        const existingTab = tabsRef.current.find((tab) => tab.path === path);
+        if (existingTab) {
+            setActiveTabId(existingTab.id);
+            return;
+        }
+
+        // This reservation is synchronous, so overlapping native events cannot
+        // start a second read before React has committed the first new tab.
+        if (pendingPathsRef.current.has(path)) return;
+        pendingPathsRef.current.add(path);
+
+        try {
+            const result = await OpenFile(path);
+            if (!result) return; // 目錄或二進位檔由後端拒絕，不建立空分頁
+
+            const tabOpenedWhileReading = tabsRef.current.find((tab) => tab.path === path);
+            if (tabOpenedWhileReading) {
+                setActiveTabId(tabOpenedWhileReading.id);
+                return;
+            }
+
+            const newTab: Tab = {
+                id: 'tab-' + Date.now() + '-' + Math.random().toString(36).substring(2, 9),
+                name: getBaseName(path),
+                path,
+                content: result.content,
+                isDirty: false,
+                encoding: result.encoding,
+            };
+            const currentTabs = tabsRef.current;
+            const canReplacePlaceholder = currentTabs.length === 1
+                && currentTabs[0].path === ''
+                && currentTabs[0].content === ''
+                && !currentTabs[0].isDirty;
+            replaceTabs(canReplacePlaceholder ? [newTab] : [...currentTabs, newTab]);
+            setActiveTabId(newTab.id);
+        } catch (err) {
+            alert('無法開啟檔案「' + getBaseName(path) + '」:\n' + err);
+        } finally {
+            pendingPathsRef.current.delete(path);
+        }
+    }, [replaceTabs]);
+
+    const openPaths = useCallback(async (paths: string[]) => {
+        const uniquePaths = [...new Set(paths.filter((path): path is string => typeof path === 'string' && path.length > 0))];
+        for (const path of uniquePaths) {
+            await openPath(path);
+        }
+    }, [openPath]);
+
+    // Wails supplies real native absolute paths in event.data.files.
+    useEffect(() => {
+        const cancel = Events.On('files-dropped', (event) => {
+            const files = (event.data as { files?: unknown } | undefined)?.files;
+            if (Array.isArray(files)) void openPaths(files.filter((path): path is string => typeof path === 'string'));
+        });
+        return cancel;
+    }, [openPaths]);
 
     // 5. 開啟舊檔 (Open File)
     const handleOpenFile = async () => {
@@ -69,35 +134,7 @@ function App() {
             const path = await SelectFile();
             if (!path) return; // 使用者取消
 
-            // 檢查該檔案是否已經在分頁中開啟
-            const existingTab = tabs.find((t) => t.path === path);
-            if (existingTab) {
-                setActiveTabId(existingTab.id);
-                return;
-            }
-
-            // 讀取檔案內容與編碼
-            const result = await OpenFile(path);
-            if (!result) return;
-            const id = 'tab-' + Date.now();
-            const name = getBaseName(path);
-            const newTab: Tab = {
-                id,
-                name,
-                path,
-                content: result.content,
-                isDirty: false,
-                encoding: result.encoding,
-            };
-
-            setTabs((prev) => {
-                // 如果當前只有一個空白且未修改的 Untitled 分頁，就直接替換它
-                if (prev.length === 1 && prev[0].path === '' && prev[0].content === '' && !prev[0].isDirty) {
-                    return [newTab];
-                }
-                return [...prev, newTab];
-            });
-            setActiveTabId(id);
+            await openPath(path);
         } catch (err) {
             alert('無法開啟檔案:\n' + err);
         }
@@ -116,9 +153,9 @@ function App() {
         try {
             await SaveFile(activeTab.path, activeTab.content, activeTab.encoding || 'UTF-8');
             // 標記為乾淨
-            setTabs((prev) =>
-                prev.map((t) => (t.id === activeTab.id ? { ...t, isDirty: false } : t))
-            );
+            replaceTabs(tabsRef.current.map((t) =>
+                t.id === activeTab.id ? { ...t, isDirty: false } : t
+            ));
         } catch (err) {
             alert('儲存檔案失敗:\n' + err);
         }
@@ -137,13 +174,11 @@ function App() {
 
             // 更新目前分頁的狀態與路徑資訊
             const newName = getBaseName(savePath);
-            setTabs((prev) =>
-                prev.map((t) =>
+            replaceTabs(tabsRef.current.map((t) =>
                     t.id === activeTab.id
                         ? { ...t, name: newName, path: savePath, isDirty: false }
                         : t
-                )
-            );
+            ));
         } catch (err) {
             alert('另存新檔失敗:\n' + err);
         }
@@ -161,7 +196,7 @@ function App() {
         }
 
         const remainingTabs = tabs.filter((t) => t.id !== idToClose);
-        setTabs(remainingTabs);
+        replaceTabs(remainingTabs);
 
         // 如果關閉的是當前作用中的分頁，需切換 Active Tab ID
         if (activeTabId === idToClose) {
@@ -173,7 +208,7 @@ function App() {
             } else {
                 // 若全部被關閉，則自動新增一個空白分頁
                 const newId = 'tab-' + Date.now();
-                setTabs([{
+                replaceTabs([{
                     id: newId,
                     name: 'Untitled-1',
                     path: '',
@@ -196,13 +231,11 @@ function App() {
 
     // 9. 編輯區文字變更 callback
     const handleContentChange = (newValue: string) => {
-        setTabs((prev) =>
-            prev.map((t) =>
+        replaceTabs(tabsRef.current.map((t) =>
                 t.id === activeTabId
                     ? { ...t, content: newValue, isDirty: true }
                     : t
-            )
-        );
+        ));
     };
 
     // 10. 字體調整
@@ -213,13 +246,11 @@ function App() {
     // 10.5 轉換編碼
     const handleConvertEncoding = (newEncoding: string) => {
         if (!activeTabId) return;
-        setTabs((prev) =>
-            prev.map((t) =>
+        replaceTabs(tabsRef.current.map((t) =>
                 t.id === activeTabId
                     ? { ...t, encoding: newEncoding, isDirty: true }
                     : t
-            )
-        );
+        ));
     };
 
     // 11. 全域快捷鍵監聽 (Shortcuts)
@@ -273,7 +304,7 @@ function App() {
     }, [activeTabId, tabs, untitledCounter]); // 當 activeTab 改變時重新訂閱，確保 closures 內取到最新狀態
 
     return (
-        <div id="App" className="app-root">
+        <div id="App" className="app-root" data-file-drop-target>
             {/* 1. 頂部選單列 */}
             <MenuBar
                 onNewFile={handleNewFile}

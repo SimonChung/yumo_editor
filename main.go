@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/wailsapp/wails/v3/pkg/application"
+	"github.com/wailsapp/wails/v3/pkg/events"
 )
 
 //go:embed frontend/dist/*
@@ -26,11 +27,19 @@ func main() {
 	})
 
 	// Create the main window
-	wailsApp.Window.NewWithOptions(application.WebviewWindowOptions{
+	mainWindow := wailsApp.Window.NewWithOptions(application.WebviewWindowOptions{
 		Title:            "玉墨",
 		Width:            1024,
 		Height:           768,
 		BackgroundColour: application.NewRGBA(27, 38, 54, 255),
+		EnableFileDrop:   true,
+	})
+
+	// Wails resolves Explorer drops to native absolute paths. Forward those paths
+	// to React instead of trying to reconstruct them from browser File objects.
+	mainWindow.OnWindowEvent(events.Common.WindowFilesDropped, func(event *application.WindowEvent) {
+		files := event.Context().DroppedFiles()
+		wailsApp.Event.Emit("files-dropped", map[string]any{"files": files})
 	})
 
 	// Run the application
