@@ -20,7 +20,7 @@ Unicode true
 !define INFO_PROJECTNAME    "yumo_editor"
 !define INFO_COMPANYNAME    "ybak"
 !define INFO_PRODUCTNAME    "YuMo Editor"
-!define INFO_PRODUCTVERSION "0.1.0"
+!define INFO_PRODUCTVERSION "0.3.0"
 !define INFO_COPYRIGHT      "Copyright (c) 2026 simon.chung.tw"
 !define PRODUCT_EXECUTABLE  "yumo_editor.exe"
 !define UNINST_KEY_NAME     "ybakYuMoEditor"
@@ -30,6 +30,7 @@ Unicode true
 ## Include the wails tools
 ####
 !include "wails_tools.nsh"
+!include /CHARSET=UTF8 "context_menu.nsh"
 
 # The version information for this two must consist of 4 parts
 VIProductVersion "${INFO_PRODUCTVERSION}.0"
@@ -90,6 +91,7 @@ Section
 
     !insertmacro wails.associateFiles
     !insertmacro wails.associateCustomProtocols
+    !insertmacro yumo.registerContextMenu
 
     !insertmacro wails.writeUninstaller
 SectionEnd
@@ -106,6 +108,7 @@ Section "uninstall"
 
     !insertmacro wails.unassociateFiles
     !insertmacro wails.unassociateCustomProtocols
+    !insertmacro yumo.unregisterContextMenu
 
     !insertmacro wails.deleteUninstaller
 SectionEnd

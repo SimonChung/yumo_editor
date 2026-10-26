@@ -78,7 +78,7 @@ tasks:
     platforms: [darwin]
     cmds:
       - wails3 generate icons -input build/appicon.png -macfilename build/darwin/icons.icns
-      - wails3 update build-assets -name "{{.APP_NAME}}" -binaryname "{{.APP_NAME}}" -productname "YuMo Editor" -productidentifier "tw.ybak.yumo.editor" -productversion "0.1.0" -productdescription "A lightweight code editor built with Wails v3" -productcopyright "© 2026, simon.chung.tw" -dir build
+      - wails3 update build-assets -name "{{.APP_NAME}}" -binaryname "{{.APP_NAME}}" -productname "YuMo Editor" -productidentifier "tw.ybak.yumo.editor" -productversion "0.3.0" -productdescription "A lightweight code editor built with Wails v3" -productcopyright "© 2026, simon.chung.tw" -dir build
       - mkdir -p "{{.BIN_DIR}}/{{.APP_NAME}}.app/Contents/MacOS"
       - mkdir -p "{{.BIN_DIR}}/{{.APP_NAME}}.app/Contents/Resources"
       - cp build/darwin/icons.icns "{{.BIN_DIR}}/{{.APP_NAME}}.app/Contents/Resources"

@@ -11,7 +11,7 @@ import { StatusBar } from './components/StatusBar';
 
 // 匯入 Wails v3 自動生成的 Go 橋接方法
 // 注意: 執行 `wails3 generate bindings` 後，此路徑會自動更新至 frontend/bindings/ 下
-import { OpenFile, SaveFile, SelectFile, SelectSaveFile } from '../bindings/tw.ybak/yumo/app';
+import { OpenFile, SaveFile, SelectFile, SelectSaveFile, TakeLaunchFiles } from '../bindings/tw.ybak/yumo/app';
 
 const createUntitledTab = (number: number): Tab => ({
     id: 'tab-' + Date.now() + '-' + Math.random().toString(36).substring(2, 9),
@@ -34,6 +34,7 @@ function App() {
     const [untitledCounter, setUntitledCounter] = useState<number>(2);
     const tabsRef = useRef<Tab[]>(tabs);
     const pendingPathsRef = useRef<Set<string>>(new Set());
+    const launchOpenQueueRef = useRef<Promise<void>>(Promise.resolve());
 
     const replaceTabs = useCallback((next: Tab[]) => {
         tabsRef.current = next;
@@ -64,7 +65,7 @@ function App() {
         setUntitledCounter((prev) => prev + 1);
     };
 
-    // 選單與原生拖放共用同一條開檔流程，確保路徑去重及未儲存內容不被重讀覆寫。
+    // 選單、原生拖放與檔案總管右鍵共用開檔流程，保留既有分頁的未儲存內容。
     const openPath = useCallback(async (path: string) => {
         if (!path) return;
 
@@ -124,6 +125,19 @@ function App() {
             const files = (event.data as { files?: unknown } | undefined)?.files;
             if (Array.isArray(files)) void openPaths(files.filter((path): path is string => typeof path === 'string'));
         });
+        return cancel;
+    }, [openPaths]);
+
+    useEffect(() => {
+        const drainLaunchFiles = () => {
+            // Serialize startup and later launches, including StrictMode's
+            // repeated effect setup. Subscribe before draining to avoid gaps.
+            launchOpenQueueRef.current = launchOpenQueueRef.current
+                .then(async () => { await openPaths(await TakeLaunchFiles()); })
+                .catch((err) => { console.error('無法接收啟動檔案:', err); });
+        };
+        const cancel = Events.On('launch-files-pending', drainLaunchFiles);
+        drainLaunchFiles();
         return cancel;
     }, [openPaths]);
 

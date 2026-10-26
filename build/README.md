@@ -31,4 +31,6 @@ These files are tracked project configuration. `task build` reads them; it does 
 
 Run `build.bat` from Windows to produce `bin/yumo_editor.exe` and `bin/yumo_editor-amd64-installer.exe`. The active installer configuration is `windows/installer/project.nsi`; `windows/nsis` is not used by the packaging task.
 
+`windows/installer/context_menu.nsh` registers the file-only Explorer verb “以 YuMo Editor 編輯” in the install scope and removes it on uninstall. Both executable and file arguments are quoted. Keep this custom include when refreshing generated Wails helpers. Windows 11 exposes this classic verb under “Show more options”.
+
 `windows/installer/wails_tools.nsh` was regenerated with Wails v3.0.0-beta.30. Packaging uses `wails3 generate webview2bootstrapper` to provide the bundled Microsoft bootstrapper alongside the NSIS script; no unchecked build-time download is needed. See the root README for prerequisites, command aliases and verification limits.

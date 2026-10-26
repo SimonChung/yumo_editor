@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"path/filepath"
 	"strings"
+	"sync"
 
 	"tw.ybak/yumo/internal/fs"
 
@@ -13,7 +14,10 @@ import (
 
 // App struct
 type App struct {
-	app *application.App
+	app                *application.App
+	launchMu           sync.Mutex
+	pendingLaunchFiles []string
+	notifyLaunchFiles  func()
 }
 
 // NewApp creates a new App application struct

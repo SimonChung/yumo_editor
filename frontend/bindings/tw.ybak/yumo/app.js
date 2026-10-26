@@ -54,6 +54,18 @@ export function SelectSaveFile(defaultName) {
     return $Call.ByID(893202942, defaultName);
 }
 
+/**
+ * TakeLaunchFiles returns pending command-line files exactly once. The frontend
+ * calls this after subscribing to notifications and after every later launch.
+ * @returns {$CancellablePromise<string[]>}
+ */
+export function TakeLaunchFiles() {
+    return $Call.ByID(1279558164).then(/** @type {($result: any) => any} */(($result) => {
+        return $$createType2($result);
+    }));
+}
+
 // Private type creation functions
 const $$createType0 = $models.FileResult.createFrom;
 const $$createType1 = $Create.Nullable($$createType0);
+const $$createType2 = $Create.Array($Create.Any);
