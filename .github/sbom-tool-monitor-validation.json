@@ -1,0 +1,27 @@
+{
+  "checked_at": "2026-11-11T03:14:10.203359+00:00",
+  "source_hashes": {
+    "scripts/check_sbom_tool_versions.py": "29e8223df8a0bf2c3fbc4b3d9972d81367c20153b569f3e85f47c76a6aca9aaa",
+    ".github/tests/test_sbom_tool_versions.py": "44377416c42b705bb21d97a8f66e3fc27252664f866ebc5f38fa4b59c4136535",
+    ".github/workflows/sbom-tool-versions.yml": "48ad25f7693e45d92619bcfbc94f7ed064874839bd8684243f64bc7bc1a50ed3",
+    ".github/sbom-tool-monitor.json": "aaf06733af219c19e168bc25ae7f183ec3019a1ab6a5577c1a3cec07498f68f6"
+  },
+  "third_party_dependencies_added": [],
+  "scope": "Trivy release monitor only; application runtime, host Python/Git and pre-existing application dependencies are not revalidated by these checks.",
+  "unit": "passed",
+  "live": {
+    "status": "no_update",
+    "tool": "Trivy",
+    "current": "0.76.2",
+    "published": false,
+    "version_basis": {
+      "mode": "release_baseline",
+      "version": "0.76.2",
+      "sources": [
+        ".github/sbom-tool-monitor.json"
+      ]
+    }
+  },
+  "diff": "passed",
+  "tests": 19
+}

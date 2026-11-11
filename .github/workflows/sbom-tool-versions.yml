@@ -1,0 +1,61 @@
+name: SBOM tool versions
+
+on:
+  schedule:
+    # Monday 09:00 Asia/Taipei (UTC+8).
+    - cron: '0 1 * * 1'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Read-only check without creating or updating Issues'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sbom-tool-versions
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - name: Fetch this exact commit with runner Git
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GIT_TERMINAL_PROMPT: '0'
+        run: |
+          # No third-party action or persistent Git credential is needed.
+          askpass="$RUNNER_TEMP/sbom-git-askpass"
+          trap 'rm -f "$askpass"' EXIT
+          cat > "$askpass" <<'ASKPASS'
+          #!/bin/sh
+          case "$1" in
+            *Username*) printf '%s\n' 'x-access-token' ;;
+            *) printf '%s\n' "$GH_TOKEN" ;;
+          esac
+          ASKPASS
+          chmod 700 "$askpass"
+          git init .
+          git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
+          git -c credential.helper= -c core.askPass="$askpass" fetch --no-tags --depth=1 origin "$GITHUB_SHA"
+          git checkout --detach FETCH_HEAD
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+      - name: Test version checks and duplicate prevention
+        run: python3 -B -m unittest discover -s .github/tests -p 'test_sbom_tool_versions.py' -v
+      - name: Check official versions and publish new findings
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || false }}
+        run: |
+          if [ "$DRY_RUN" = true ]; then
+            python3 scripts/check_sbom_tool_versions.py
+          else
+            python3 scripts/check_sbom_tool_versions.py --publish
+          fi
