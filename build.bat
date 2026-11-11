@@ -38,7 +38,7 @@ if errorlevel 1 (
 )
 if /i "%TARGET%"=="clean" goto do_clean
 if /i "%TARGET%"=="clean_all" goto do_clean_all
-for %%T in (go npm wails3) do (
+for %%T in (go npm) do (
     where %%T >nul 2>nul
     if errorlevel 1 (
         echo [ERROR] Required tool %%T is missing. See README.md for setup.
@@ -72,7 +72,7 @@ set "RESULT=%ERRORLEVEL%"
 goto end
 
 :do_dev
-wails3 dev
+node build\wails.mjs dev
 set "RESULT=%ERRORLEVEL%"
 goto end
 

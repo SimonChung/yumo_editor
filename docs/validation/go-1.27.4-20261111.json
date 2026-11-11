@@ -1,0 +1,105 @@
+{
+  "status": "high_critical_gate_passed_with_unrated_advisory",
+  "go": "1.27.4",
+  "trivy": "aquasec/trivy:0.76.2@sha256:8f6bb947dbc528902e11f2f5be52f7b519f6a39d5d148f41166f2040499768fb",
+  "cyclonedx_gomod": "v1.12.0",
+  "validated_at": "2026-11-11T04:00:40.266739+00:00",
+  "checks": {
+    "source-generate": 0,
+    "yumo-modules-generate": 0,
+    "wails-modules-generate": 0,
+    "yumo-binary-generate": 0,
+    "wails-binary-generate": 0,
+    "source-scan": 0,
+    "wails-binary-scan": 0,
+    "wails-modules-scan": 0,
+    "yumo-binary-scan": 0,
+    "yumo-modules-scan": 0,
+    "npm-audit": 0
+  },
+  "source_hashes": {
+    "go.mod": "dd407eeab9032429c882252646d421d120bdb65dbfd232ff5f4afee0086d2098",
+    "go.sum": "17bb0f631ef0947baa309cc7ccda3633cbc5ae9ead787ff822928e067eaaf962",
+    "build/tools/go.mod": "bf301a32a4b90a96166c0fdce6f0a6a58c17c1eb125f364181dc719333f06f7a",
+    "build/tools/go.sum": "75999d8138cc06ddeeba685feed879923a268ac9f71e9d148a749d6a02bf48f7",
+    "frontend/package.json": "baba2f2cef1b993cd437def6b863df49b5aa9734bd33ceeee22675c5c7e8430a",
+    "frontend/package-lock.json": "afa3693c396879880f5ce820c10f081c8677820f45dd362223dbdef5e3a76c36"
+  },
+  "binary_hashes": {
+    "yumo-binary": "0abf6666fb13cf0b7c1673b88e16a6218d7ec92c6cd0939ee5c3057e155ad0b0",
+    "wails-binary": "2040c442e176e824d585836e6720aebfc30cbab28e31729ac5aa00fe82e3422d"
+  },
+  "component_counts": {
+    "source": 230,
+    "wails-binary": 134,
+    "wails-modules": 141,
+    "yumo-binary": 5,
+    "yumo-modules": 11
+  },
+  "coverage": {
+    "app_manifest_modules": 10,
+    "app_graph_modules": 157,
+    "tools_manifest_modules": 141,
+    "tools_graph_modules": 237,
+    "npm_runtime_dev_optional_packages": 74
+  },
+  "osv": {
+    "queries": 238,
+    "packages_with_findings": 1,
+    "remaining_advisories": [
+      {
+        "id": "GO-2026-6905",
+        "severity": "UNRATED",
+        "summary": "Panic on negative member size in Reader.Read in github.com/blakesmith/ar",
+        "url": "https://pkg.go.dev/vuln/GO-2026-6905"
+      }
+    ]
+  },
+  "npm_audit": {
+    "info": 0,
+    "low": 0,
+    "moderate": 0,
+    "high": 0,
+    "critical": 0,
+    "total": 0
+  },
+  "high_critical": 0,
+  "functional_checks": {
+    "app-tidy": 0,
+    "tools-tidy": 0,
+    "app-tests": 0,
+    "app-vet": 0,
+    "full-build": 0
+  },
+  "wrapper_checks": {
+    "go_download_progress": "passed",
+    "missing_go_fails_closed": "passed"
+  },
+  "binary_inventory": {
+    "yumo_linked_modules": 4,
+    "wails_linked_modules": 133,
+    "stdlib": "go1.27.4",
+    "all_buildinfo_modules_present": true
+  },
+  "govulncheck": {
+    "version": "v1.9.0",
+    "mode": "binary",
+    "exit_code": 0,
+    "module_and_package_findings": [
+      "GO-2026-6905"
+    ],
+    "affected_symbol_findings": 0,
+    "scope": "Wails CLI on darwin/arm64; version-level advisory retained"
+  },
+  "trivy_database": {
+    "Version": 2,
+    "NextUpdate": "2026-11-11T13:03:09.93195222Z",
+    "UpdatedAt": "2026-11-10T13:03:09.93195248Z",
+    "DownloadedAt": "2026-11-10T18:23:42.775738046Z"
+  },
+  "limitations": [
+    "Windows and Linux hosts not executed; older macOS targets not validated",
+    "GO-2026-6905 remains unrated and unfixed; no vulnerability exemption or ignore list added",
+    "This change does not upgrade a globally installed Go or Wails executable"
+  ]
+}

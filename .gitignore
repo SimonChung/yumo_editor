@@ -40,3 +40,5 @@ go.work.sum
 /TASKS.md
 /build_windows_amd64.syso
 /build/windows/installer/tmp/
+/build/.tools/
+/yumo

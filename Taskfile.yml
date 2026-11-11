@@ -40,13 +40,13 @@ tasks:
       - node build/check-wails.mjs
       # Go embeds dist; a clean checkout needs a placeholder before binding analysis.
       - node -e "const fs=require('node:fs'); fs.mkdirSync('frontend/dist',{recursive:true}); if(!fs.existsSync('frontend/dist/index.html')) fs.writeFileSync('frontend/dist/index.html','');"
-      - wails3 generate bindings
+      - node build/wails.mjs generate bindings
 
   generate:syso:
     desc: "Generate Windows .syso file for icon and manifest"
     platforms: [windows]
     cmds:
-      - wails3 generate syso -arch amd64 -icon build/windows/icon.ico -manifest build/windows/wails.exe.manifest -info build/windows/info.json -out build_windows_amd64.syso
+      - node build/wails.mjs generate syso -arch amd64 -icon build/windows/icon.ico -manifest build/windows/wails.exe.manifest -info build/windows/info.json -out build_windows_amd64.syso
 
   build:
     desc: "Build the application"
@@ -68,7 +68,7 @@ tasks:
       - sh: makensis -VERSION
         msg: "Install NSIS 3 and add makensis to PATH, or use build.bat."
     cmds:
-      - wails3 generate webview2bootstrapper -dir .
+      - node ../../wails.mjs generate webview2bootstrapper -dir .
       - makensis -DARG_WAILS_AMD64_BINARY="..\\..\\bin\\{{.APP_NAME}}.exe" project.nsi
 
   darwin:package:
@@ -77,8 +77,8 @@ tasks:
       - build
     platforms: [darwin]
     cmds:
-      - wails3 generate icons -input build/appicon.png -macfilename build/darwin/icons.icns
-      - wails3 update build-assets -name "{{.APP_NAME}}" -binaryname "{{.APP_NAME}}" -productname "YuMo Editor" -productidentifier "tw.ybak.yumo.editor" -productversion "0.3.0" -productdescription "A lightweight code editor built with Wails v3" -productcopyright "© 2026, simon.chung.tw" -dir build
+      - node build/wails.mjs generate icons -input build/appicon.png -macfilename build/darwin/icons.icns
+      - node build/wails.mjs update build-assets -name "{{.APP_NAME}}" -binaryname "{{.APP_NAME}}" -productname "YuMo Editor" -productidentifier "tw.ybak.yumo.editor" -productversion "0.3.0" -productdescription "A lightweight code editor built with Wails v3" -productcopyright "© 2026, simon.chung.tw" -dir build
       - mkdir -p "{{.BIN_DIR}}/{{.APP_NAME}}.app/Contents/MacOS"
       - mkdir -p "{{.BIN_DIR}}/{{.APP_NAME}}.app/Contents/Resources"
       - cp build/darwin/icons.icns "{{.BIN_DIR}}/{{.APP_NAME}}.app/Contents/Resources"
@@ -102,7 +102,7 @@ tasks:
   dev:
     desc: "Run in development mode with hot-reload"
     cmds:
-      - wails3 dev
+      - node build/wails.mjs dev
 
   clean:
     desc: "Clean build artifacts"

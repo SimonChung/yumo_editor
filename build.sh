@@ -1,5 +1,7 @@
 #!/bin/bash
 
+cd -- "$(dirname -- "${BASH_SOURCE[0]}")" || exit 1
+
 # macOS Build Script (converted from Makefile.mac)
 BINARY_NAME="yumo_editor"
 
@@ -12,16 +14,6 @@ else
     echo "[WARNING] 'task' command not found on PATH or in \$HOME/go/bin."
     echo "Please install it via: go install github.com/go-task/task/v3/cmd/task@latest"
     TASK_CMD="task"
-fi
-
-# Detect wails3 executable
-if command -v wails3 >/dev/null 2>&1; then
-    WAILS_CMD="wails3"
-elif [ -f "$HOME/go/bin/wails3" ]; then
-    WAILS_CMD="$HOME/go/bin/wails3"
-else
-    echo "[WARNING] 'wails3' command not found on PATH or in \$HOME/go/bin."
-    WAILS_CMD="wails3"
 fi
 
 # Handle arguments
@@ -37,8 +29,8 @@ case "$TARGET" in
         $TASK_CMD package
         ;;
     dev)
-        echo "[dev] Running: $WAILS_CMD dev"
-        $WAILS_CMD dev
+        echo "[dev] Running pinned Wails CLI"
+        node build/wails.mjs dev
         ;;
     clean)
         echo "[clean] Running: $TASK_CMD clean"

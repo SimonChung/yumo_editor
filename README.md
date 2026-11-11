@@ -72,7 +72,7 @@
 
 ## 技術架構
 
-- 後端：Go 1.27.2
+- 後端：Go 1.27.4
 - 桌面框架：Wails v3.0.0-beta.30（CLI、Go module 與 `@wailsio/runtime` 使用相同版本）
 - 前端：React／React DOM 19.3.1、TypeScript 7.0.2、Vite 8.3.4
 - 語法著色：PrismJS
@@ -80,16 +80,16 @@
 
 ## 開發環境需求
 
-- Go 1.27.2（`go.mod` 已固定最低版本；較舊的 Go 在 `GOTOOLCHAIN=auto` 時會自動下載所需工具鏈）
+- Go 1.27.4（`go.mod` 已固定最低版本；較舊的 Go 在 `GOTOOLCHAIN=auto` 時會自動下載所需工具鏈）
 - Node.js 20.19+ 或 22.12+；本次以 Node.js 24.15.0、npm 11.13.0 驗證
-- Wails v3.0.0-beta.30 CLI（v3 目前仍為預發行版）
+- 專案鎖定的 Wails v3.0.0-beta.30 CLI（由下方入口建置；v3 仍為預發行版）
 - Windows 平台需安裝 WebView2 Runtime
 - 產生 Windows 安裝檔另需 [NSIS 3](https://nsis.sourceforge.io/Download)
 
-安裝 Wails CLI：
+Wails CLI 由 `build/tools/go.mod`、`go.sum` 鎖定，透過下列入口以 Go 1.27.4 建置並執行；同時固定已修補的建置工具依賴，無須安裝全域 Wails CLI：
 
 ```powershell
-go install github.com/wailsapp/wails/v3/cmd/wails3@v3.0.0-beta.30
+node build/wails.mjs version
 ```
 
 若要執行完整編譯流程，另需安裝 [Task](https://taskfile.dev/)：
@@ -111,16 +111,10 @@ cd ..
 接著從專案根目錄啟動 Wails 開發模式：
 
 ```powershell
-wails3 dev
+node build/wails.mjs dev
 ```
 
-若 `wails3` 尚未加入 PATH，可在 Windows 使用：
-
-```powershell
-& "$env:USERPROFILE\go\bin\wails3.exe" dev
-```
-
-> 請不要使用 `go run main.go` 作為日常開發方式。此專案需要 Wails 同時啟動桌面 WebView 與 React 前端，應使用 `wails3 dev`。
+此入口會保留呼叫端工作目錄，Go module、CLI 與前端 runtime 的版本一致性仍由建置流程檢查。
 
 ## 建置與驗證
 
@@ -175,7 +169,7 @@ go vet ./...
 重新產生前後端繫結：
 
 ```powershell
-wails3 generate bindings
+node build/wails.mjs generate bindings
 ```
 
 ### 本次升級與驗證（2026-10-18）
@@ -213,3 +207,5 @@ Go 使用自動工具鏈切換：本專案內 `go version` 為 1.27.2；本機 `
 ## 每週 SBOM 工具版本巡檢
 
 GitHub Actions 每週檢查 Trivy 正式版，有新版才建立通知 Issue，安全修補優先。排程、版本來源與通知去重方式見[巡檢說明](.github/SBOM_TOOL_MONITOR.md)。
+
+2026-11-11 升級 Go 1.27.4 並鎖定修補後的 Wails 建置工具；功能測試、SBOM 覆蓋與保留的上游公告見[驗證紀錄](docs/validation/go-1.27.4-20261111.md)。
