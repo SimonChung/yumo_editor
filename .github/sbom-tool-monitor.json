@@ -1,5 +1,17 @@
 {
   "schema_version": 1,
   "pin_sources": [],
-  "baseline": "0.76.2"
+  "baseline": "0.76.2",
+  "go": {
+    "pin_sources": [
+      {
+        "kind": "go_mod",
+        "path": "go.mod"
+      },
+      {
+        "kind": "go_mod",
+        "path": "build/tools/go.mod"
+      }
+    ]
+  }
 }

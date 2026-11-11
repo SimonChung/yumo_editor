@@ -1,27 +1,74 @@
 {
-  "checked_at": "2026-11-11T03:14:10.203359+00:00",
+  "checked_at": "2026-11-11T04:13:03.606136+00:00",
   "source_hashes": {
-    "scripts/check_sbom_tool_versions.py": "29e8223df8a0bf2c3fbc4b3d9972d81367c20153b569f3e85f47c76a6aca9aaa",
-    ".github/tests/test_sbom_tool_versions.py": "44377416c42b705bb21d97a8f66e3fc27252664f866ebc5f38fa4b59c4136535",
-    ".github/workflows/sbom-tool-versions.yml": "48ad25f7693e45d92619bcfbc94f7ed064874839bd8684243f64bc7bc1a50ed3",
-    ".github/sbom-tool-monitor.json": "aaf06733af219c19e168bc25ae7f183ec3019a1ab6a5577c1a3cec07498f68f6"
+    "scripts/check_sbom_tool_versions.py": "890a0df364bf2d44629d81b5227e27c81cd7dbc8da5801e0194847e89741de6f",
+    ".github/tests/test_sbom_tool_versions.py": "d836ab439aa50d37f24a62ca46285882671ad03fa66d8416749775e956d21270",
+    ".github/workflows/sbom-tool-versions.yml": "b9cb97580479af5e3209c1425ff9e60eff77cef41023607e3359fc31e3e581c5",
+    ".github/sbom-tool-monitor.json": "b1e68d2b048a22e470c12dbc93cba6a4221ae77359db809a38f1160ef119f587"
   },
   "third_party_dependencies_added": [],
-  "scope": "Trivy release monitor only; application runtime, host Python/Git and pre-existing application dependencies are not revalidated by these checks.",
+  "scope": "Trivy and Go release monitor; stdlib-only Python checker. Existing application dependency SBOMs are tracked separately.",
   "unit": "passed",
   "live": {
-    "status": "no_update",
-    "tool": "Trivy",
-    "current": "0.76.2",
-    "published": false,
-    "version_basis": {
-      "mode": "release_baseline",
-      "version": "0.76.2",
-      "sources": [
-        ".github/sbom-tool-monitor.json"
-      ]
-    }
+    "status": "ok",
+    "tools": [
+      {
+        "status": "no_update",
+        "tool": "Trivy",
+        "current": "0.76.2",
+        "published": false,
+        "version_basis": {
+          "mode": "release_baseline",
+          "version": "0.76.2",
+          "sources": [
+            ".github/sbom-tool-monitor.json"
+          ]
+        }
+      },
+      {
+        "status": "no_update",
+        "tool": "Go",
+        "current": "1.27.4",
+        "published": false,
+        "version_basis": {
+          "mode": "go_pins",
+          "version": "1.27.4",
+          "versions": [
+            "1.27.4"
+          ],
+          "pins": [
+            {
+              "source": "go.mod",
+              "versions": [
+                "1.27.4"
+              ]
+            },
+            {
+              "source": "build/tools/go.mod",
+              "versions": [
+                "1.27.4"
+              ]
+            }
+          ]
+        }
+      }
+    ]
   },
   "diff": "passed",
-  "tests": 19
+  "tests": 40,
+  "existing_dependency_validation": {
+    "mode": "unchanged_dependency_evidence_reused",
+    "report": "docs/validation/go-1.27.4-20261111.json",
+    "manifest_hashes_match": true,
+    "high_critical": 0,
+    "remaining_advisories": [
+      {
+        "id": "GO-2026-6905",
+        "severity": "UNRATED",
+        "summary": "Panic on negative member size in Reader.Read in github.com/blakesmith/ar",
+        "url": "https://pkg.go.dev/vuln/GO-2026-6905"
+      }
+    ],
+    "scope": "Only the Python stdlib version monitor changed in this task; application sources, modules and lockfiles unchanged."
+  }
 }

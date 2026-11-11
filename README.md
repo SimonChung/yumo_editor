@@ -204,8 +204,8 @@ Go 使用自動工具鏈切換：本專案內 `go version` 為 1.27.2；本機 `
 
 本專案採用 [MIT License](LICENSE)。
 
-## 每週 SBOM 工具版本巡檢
+## 每週 Trivy 與 Go 版本巡檢
 
-GitHub Actions 每週檢查 Trivy 正式版，有新版才建立通知 Issue，安全修補優先。排程、版本來源與通知去重方式見[巡檢說明](.github/SBOM_TOOL_MONITOR.md)。
+GitHub Actions 每週檢查 Trivy 與 Go 正式版，有新版才建立通知 Issue，安全修補優先。排程、版本來源與通知去重方式見[巡檢說明](.github/SBOM_TOOL_MONITOR.md)。
 
 2026-11-11 升級 Go 1.27.4 並鎖定修補後的 Wails 建置工具；功能測試、SBOM 覆蓋與保留的上游公告見[驗證紀錄](docs/validation/go-1.27.4-20261111.md)。

@@ -69,7 +69,7 @@ class VersionMonitorTests(unittest.TestCase):
         self.assertEqual([r['tag_name'] for r in monitor.newer_releases(releases, '0.8.0')], ['v0.10.0', 'v0.9.0'])
 
     def test_empty_or_malformed_release_data_fails(self):
-        for releases in [[], [release('unexpected')], [release('v0.76.3', body=None)], [release('v0.76.3', html_url='https://example.org')]]:
+        for releases in [[], [None], [release('unexpected')], [release('v0.76.3', body=None)], [release('v0.76.3', html_url='https://example.org')]]:
             with self.subTest(releases=releases), self.assertRaises(ValueError):
                 self.run_check(FakeGitHub(releases))
 
@@ -135,7 +135,7 @@ class VersionMonitorTests(unittest.TestCase):
     def test_github_failure_is_nonzero_and_not_no_update(self):
         error = HTTPError('https://api.github.com/repos/example/skills', 403, 'Forbidden', {}, None)
         self.addCleanup(error.close)
-        with patch.object(monitor.GitHub, 'pages', side_effect=error), patch('sys.argv', ['check', '--repository', REPO]), patch('sys.stdout', new_callable=io.StringIO) as out:
+        with patch.object(monitor.GitHub, 'pages', side_effect=error), patch.object(monitor, 'check_go', return_value={'tool': 'Go', 'status': 'no_update'}), patch('sys.argv', ['check', '--repository', REPO]), patch('sys.stdout', new_callable=io.StringIO) as out:
             self.assertEqual(monitor.main(), 1)
         self.assertEqual(json.loads(out.getvalue())['status'], 'failed')
 
@@ -219,6 +219,211 @@ class ScannerPinTests(unittest.TestCase):
             self.config(root, [{'kind': 'trivy_image', 'path': filename} for filename in ['a', 'b']])
             with self.assertRaises(ValueError):
                 monitor.current_pin(root)
+
+
+def go_release(value, body='Bug fixes'):
+    return {'tag_name': value, 'name': 'go' + value, 'body': body,
+            'published_at': '2026-11-12', 'html_url': monitor.GO_HISTORY + '#go' + value}
+
+
+def download(value, stable=True):
+    return {'version': 'go' + value, 'stable': stable,
+            'files': [{'kind': 'source', 'version': 'go' + value, 'sha256': 'a' * 64}]}
+
+
+def history(value, body='Bug fixes', tag='p'):
+    return f'<{tag} id="go{value}">go{value} (released 2026-11-12) {body}</{tag}>'
+
+
+class GoPinTests(unittest.TestCase):
+    def config(self, root, sources, **extra):
+        (root / '.github').mkdir(exist_ok=True)
+        (root / '.github/sbom-tool-monitor.json').write_text(json.dumps({
+            'schema_version': 1, 'pin_sources': [], 'go': {'pin_sources': sources, **extra}}))
+
+    def test_explicit_baseline_switches_to_actual_module(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            self.config(root, [{'kind': 'go_mod', 'path': 'go.mod', 'optional': True}], baseline='1.27.4')
+            self.assertEqual(monitor.current_go_pin(root)['mode'], 'release_baseline')
+            (root / 'go.mod').write_text('module demo\ngo 1.27.5\n')
+            self.assertEqual(monitor.current_go_pin(root)['version'], '1.27.5')
+            self.assertEqual(monitor.current_go_pin(root)['mode'], 'go_pins')
+
+    def test_all_module_toolchain_ci_and_image_versions_are_retained(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / 'go.mod').write_text('module demo\ngo 1.27.4 // minimum\ntoolchain go1.27.5\n')
+            (root / 'ci.yml').write_text("    go-version: '1.27.5'\n")
+            (root / 'Dockerfile').write_text('FROM --platform=$BUILDPLATFORM golang:1.27.3-bookworm@' + DIGEST + ' AS build\n')
+            self.config(root, [{'kind': kind, 'path': path} for kind, path in [('go_mod', 'go.mod'), ('go_ci', 'ci.yml'), ('go_image', 'Dockerfile')]])
+            pin = monitor.current_go_pin(root)
+            self.assertEqual(pin['version'], '1.27.3')
+            self.assertEqual(pin['versions'], ['1.27.3', '1.27.4', '1.27.5'])
+            self.assertEqual(len(pin['pins']), 3)
+
+    def test_required_missing_invalid_and_unconfigured_sources_fail(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            self.config(root, [{'kind': 'go_mod', 'path': 'go.mod'}], baseline='1.27.4')
+            with self.assertRaises(FileNotFoundError):
+                monitor.current_go_pin(root)
+            for text in ['module demo', 'go 1.27rc1', 'go 1.27.4\ngo 1.27.5', 'go 1.27.4\ntoolchain go1.28rc1']:
+                (root / 'go.mod').write_text(text + '\n')
+                with self.subTest(text=text), self.assertRaises(ValueError):
+                    monitor.current_go_pin(root)
+            self.config(root, [])
+            with self.assertRaises(ValueError):
+                monitor.current_go_pin(root)
+
+    def test_source_escape_and_non_exact_ci_are_rejected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            self.config(root, [{'kind': 'go_mod', 'path': '../outside', 'optional': True}], baseline='1.27.4')
+            with self.assertRaises(ValueError):
+                monitor.current_go_pin(root)
+            for kind, text in [('go_ci', 'go-version: stable'), ('go_ci', 'go-version: 1.27.x'), ('go_image', 'FROM golang:latest')]:
+                (root / 'source').write_text(text)
+                self.config(root, [{'kind': kind, 'path': 'source'}])
+                with self.subTest(text=text), self.assertRaises(ValueError):
+                    monitor.current_go_pin(root)
+
+    def test_minor_go_directive_and_default_toolchain(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            self.config(root, [{'kind': 'go_mod', 'path': 'go.mod'}])
+            (root / 'go.mod').write_text('go 1.27\ntoolchain default\n')
+            self.assertEqual(monitor.current_go_pin(root)['versions'], ['1.27.0'])
+
+
+class GoReleaseTests(unittest.TestCase):
+    def releases(self, downloads, html, current='1.27.4'):
+        with patch.object(monitor, 'request_json', return_value=downloads), patch.object(monitor, 'request_text', return_value=html):
+            return monitor.newer_go_releases(current)
+
+    def test_no_new_stable_release_skips_history_and_prereleases(self):
+        with patch.object(monitor, 'request_json', return_value=[download('1.27.4'), download('1.28rc1', False)]), patch.object(monitor, 'request_text') as read:
+            self.assertEqual(monitor.newer_go_releases('1.27.4'), [])
+            read.assert_not_called()
+
+    def test_numeric_order_and_intermediate_security_with_html(self):
+        html = ''.join(history(f'1.27.{n}', 'security\n<b>fixes</b>' if n == 5 else 'bug fixes') for n in range(4, 11))
+        releases = self.releases([download('1.27.9'), download('1.27.10')], html)
+        self.assertEqual(releases[0]['tag_name'], '1.27.10')
+        self.assertEqual([r['version'] for r in monitor.security_evidence(releases)], ['1.27.5'])
+
+    def test_new_major_release_and_old_branch_security_patch(self):
+        html = history('1.27.4') + history('1.27.5', 'security fixes') + history('1.28.0', tag='h2')
+        releases = self.releases([download('1.28.0'), download('1.27.5')], html)
+        self.assertEqual(releases[0]['tag_name'], '1.28.0')
+        self.assertEqual(monitor.security_evidence(releases)[0]['version'], '1.27.5')
+
+    def test_old_unreleased_history_entry_does_not_break_current_interval(self):
+        html = '<p id="go1.7.2">This release was never published.</p>' + history('1.27.4') + history('1.27.5', 'security fixes')
+        releases = self.releases([download('1.27.5')], html)
+        self.assertEqual(monitor.security_evidence(releases)[0]['version'], '1.27.5')
+
+    def test_supported_branch_patch_cannot_disappear_from_history(self):
+        html = history('1.27.4') + history('1.28.0', tag='h2')
+        with self.assertRaises(ValueError):
+            self.releases([download('1.28.0'), download('1.27.5')], html)
+
+    def test_empty_or_incomplete_downloads_fail(self):
+        for downloads in [[], {}, [None], [download('1.28rc1', False)], [download('1.27.5') | {'files': []}], [download('1.27.5') | {'files': [None]}], [download('1.27.5') | {'stable': None}], [download('1.28rc1')]]:
+            with self.subTest(downloads=downloads), self.assertRaises(ValueError):
+                self.releases(downloads, '')
+
+    def test_missing_latest_current_patch_or_malformed_history_fails(self):
+        for html in ['', history('1.27.5'), history('1.27.4'), history('1.27.4') + history('1.27.6'),
+                     history('1.27.4') + history('1.27.5') * 2,
+                     history('1.27.4') + '<p id="go1.27.5">truncated',
+                     history('1.27.4') + '<p id="go1.27.5">no date</p>']:
+            latest = '1.27.6' if 'go1.27.6' in html else '1.27.5'
+            with self.subTest(html=html), self.assertRaises(ValueError):
+                self.releases([download(latest)], html)
+
+    def test_history_failure_is_not_no_update(self):
+        with patch.object(monitor, 'request_json', return_value=[download('1.27.5')]), patch.object(monitor, 'request_text', side_effect=OSError('offline')), self.assertRaises(OSError):
+            monitor.newer_go_releases('1.27.4')
+
+
+class GoNotificationTests(unittest.TestCase):
+    def setUp(self):
+        patcher = patch.object(monitor, 'current_go_pin', return_value={
+            'mode': 'go_pins', 'version': '1.27.4', 'versions': ['1.27.4'],
+            'pins': [{'source': 'go.mod', 'versions': ['1.27.4']}]})
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
+    def run_check(self, api, releases, publish=True):
+        return monitor.check_go(api, REPO, 'example', publish=publish, release_reader=lambda _: releases)
+
+    def issue(self, security=False, **extra):
+        return {'number': 15, 'title': '[安全修補優先] Go' if security else '[一般版本更新] Go',
+                'body': '<!-- codex-skills:sbom-tool-update:go:1.27.5 -->',
+                'html_url': 'https://github.com/example/skills/issues/15', **extra}
+
+    def test_no_update_is_silent_and_needs_no_issue_access(self):
+        api = FakeGitHub([])
+        with patch.object(api, 'pages', side_effect=AssertionError('No issue access expected')):
+            self.assertEqual(self.run_check(api, [])['status'], 'no_update')
+        self.assertEqual(api.writes, [])
+
+    def test_new_release_issue_is_assigned_and_separate_from_trivy(self):
+        api = FakeGitHub([], [{'body': '<!-- codex-skills:sbom-tool-update:trivy:1.27.5 -->'}])
+        result = self.run_check(api, [go_release('1.27.5')])
+        self.assertTrue(result['published'])
+        self.assertEqual(len(api.writes), 1)
+        payload = api.writes[0][2]
+        self.assertEqual(payload['assignees'], ['example'])
+        self.assertIn('go.mod', payload['body'])
+        self.assertIn('Go 1.27.5', payload['title'])
+
+    def test_closed_open_and_pr_deduplication(self):
+        for state in ['open', 'closed']:
+            api = FakeGitHub([], [self.issue(state=state)])
+            self.assertEqual(self.run_check(api, [go_release('1.27.5')])['status'], 'already_reported')
+            self.assertEqual(api.writes, [])
+        api = FakeGitHub([], [self.issue(pull_request={})])
+        self.assertTrue(self.run_check(api, [go_release('1.27.5')])['published'])
+
+    def test_intermediate_security_has_priority(self):
+        result = self.run_check(FakeGitHub([]), [go_release('1.27.6'), go_release('1.27.5', 'security fixes')])
+        self.assertTrue(result['title'].startswith('[安全修補優先]'))
+        self.assertIn('#go1.27.5', result['body'])
+
+    def test_security_escalation_and_retry_once_even_after_close(self):
+        releases = [go_release('1.27.5', 'security fixes')]
+        api = FakeGitHub([], [self.issue(state='closed')])
+        self.assertEqual(self.run_check(api, releases)['status'], 'security_escalation')
+        self.assertEqual([w[0] for w in api.writes], ['POST', 'PATCH'])
+        api = FakeGitHub([], [self.issue()], [{'body': '<!-- codex-skills:sbom-security-escalation -->'}])
+        self.run_check(api, releases)
+        self.assertEqual([w[0] for w in api.writes], ['PATCH'])
+        api = FakeGitHub([], [self.issue(security=True)])
+        self.assertEqual(self.run_check(api, releases)['status'], 'already_reported')
+        self.assertEqual(api.writes, [])
+
+    def test_baseline_is_honest_and_dry_run_is_read_only(self):
+        pin = {'mode': 'release_baseline', 'version': '1.27.4', 'versions': ['1.27.4'], 'pins': []}
+        api = FakeGitHub([])
+        with patch.object(monitor, 'current_go_pin', return_value=pin):
+            result = self.run_check(api, [go_release('1.27.5')], publish=False)
+        self.assertIn('不表示專案已使用 Go', result['body'])
+        self.assertFalse(result['published'])
+        self.assertEqual(api.writes, [])
+
+    def test_failed_trivy_does_not_prevent_go_check(self):
+        with patch.object(monitor, 'check', side_effect=OSError('offline')), patch.object(monitor, 'check_go', return_value={'tool': 'Go', 'status': 'no_update'}) as go, patch('sys.argv', ['check', '--repository', REPO]), patch('sys.stdout', new_callable=io.StringIO) as out:
+            self.assertEqual(monitor.main(), 1)
+            go.assert_called_once()
+            result = json.loads(out.getvalue())
+            self.assertEqual([t['status'] for t in result['tools']], ['failed', 'no_update'])
+
+    def test_failed_go_preserves_trivy_result_and_fails_workflow(self):
+        with patch.object(monitor, 'check', return_value={'tool': 'Trivy', 'status': 'no_update'}), patch.object(monitor, 'current_pin', return_value={}), patch.object(monitor, 'check_go', side_effect=ValueError('bad Go metadata')), patch('sys.argv', ['check', '--repository', REPO]), patch('sys.stdout', new_callable=io.StringIO) as out:
+            self.assertEqual(monitor.main(), 1)
+            self.assertEqual([t['status'] for t in json.loads(out.getvalue())['tools']], ['no_update', 'failed'])
 
 
 if __name__ == '__main__':
