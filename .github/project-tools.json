@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "tools": {
+    "git": {
+      "mode": "watch",
+      "sources": [
+        {
+          "path": ".github/workflows/sbom-tool-versions.yml",
+          "pattern": "git init"
+        }
+      ],
+      "started_at": "2026-11-12T00:47:30.111816+00:00",
+      "initial_versions": []
+    },
+    "python": {
+      "mode": "watch",
+      "sources": [
+        {
+          "path": ".github/workflows/sbom-tool-versions.yml",
+          "pattern": "python3"
+        }
+      ],
+      "started_at": "2026-11-12T00:47:30.111816+00:00",
+      "initial_versions": []
+    },
+    "node": {
+      "mode": "watch",
+      "sources": [
+        {
+          "path": "frontend/package.json",
+          "pattern": "\"node\":\\s*\""
+        }
+      ],
+      "started_at": "2026-11-12T00:47:30.111816+00:00",
+      "initial_versions": []
+    },
+    "npm": {
+      "mode": "watch",
+      "sources": [
+        {
+          "path": "Taskfile.yml",
+          "pattern": "npm ci"
+        }
+      ],
+      "started_at": "2026-11-12T00:47:30.111816+00:00",
+      "initial_versions": []
+    },
+    "task": {
+      "mode": "watch",
+      "sources": [
+        {
+          "path": "Taskfile.yml",
+          "pattern": "go-task/task"
+        }
+      ],
+      "started_at": "2026-11-12T00:47:30.111816+00:00",
+      "initial_versions": []
+    },
+    "nsis": {
+      "mode": "watch",
+      "sources": [
+        {
+          "path": "build.bat",
+          "pattern": "where makensis"
+        }
+      ],
+      "started_at": "2026-11-12T00:47:30.111816+00:00",
+      "initial_versions": []
+    },
+    "wails": {
+      "mode": "pin",
+      "sources": [
+        {
+          "path": "build/tools/go.mod",
+          "pattern": "^\\s*github.com/wailsapp/wails/v3 v(?P<version>\\S+)"
+        }
+      ],
+      "channel": "installed-preview"
+    },
+    "typescript": {
+      "mode": "pin",
+      "sources": [
+        {
+          "path": "frontend/package-lock.json",
+          "pointer": [
+            "packages",
+            "node_modules/typescript",
+            "version"
+          ]
+        }
+      ]
+    },
+    "vite": {
+      "mode": "pin",
+      "sources": [
+        {
+          "path": "frontend/package-lock.json",
+          "pointer": [
+            "packages",
+            "node_modules/vite",
+            "version"
+          ]
+        }
+      ]
+    },
+    "vite-react": {
+      "mode": "pin",
+      "sources": [
+        {
+          "path": "frontend/package-lock.json",
+          "pointer": [
+            "packages",
+            "node_modules/@vitejs/plugin-react",
+            "version"
+          ]
+        }
+      ]
+    }
+  }
+}

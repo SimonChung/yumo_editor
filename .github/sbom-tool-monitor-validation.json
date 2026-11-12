@@ -1,17 +1,68 @@
 {
-  "checked_at": "2026-11-12T00:14:29.260745+00:00",
+  "checked_at": "2026-11-12T00:56:03.588271+00:00",
   "source_hashes": {
     "scripts/check_sbom_tool_versions.py": "f9dab52443d8afcbe572584d07292ce0db5bb4caef7721a52c14d9e7a8389186",
+    "scripts/check_project_tool_versions.py": "cb67b029c0dcf9c98cf812132d63bd5b523d304b8c55a6bbcf97c8bec3f2f585",
     ".github/tests/test_sbom_tool_versions.py": "197f35295275f8626bce3c69a1f7dea592fdf76b0d67716fc4dacecdefd1402b",
-    ".github/workflows/sbom-tool-versions.yml": "7cd7e975f70f27ab8bd6d41fbc12eb0969b27b83b52f0e0cb9a0b6825abed691",
-    ".github/sbom-tool-monitor.json": "727b674bb1efd0799af3075c9649e83e3760d9c106dbcd5c00b7dc317359a34e"
+    ".github/tests/test_project_tool_versions.py": "5281692f1a95c51eb5963f8617891a2bd5ac2a14bf26840d1d418bc98dd3680a",
+    ".github/workflows/sbom-tool-versions.yml": "8cb9fc8fd232a0d4a1e1d0c848b9bd05513cf4ec52c6e39b52072177af549068",
+    ".github/sbom-tool-monitor.json": "727b674bb1efd0799af3075c9649e83e3760d9c106dbcd5c00b7dc317359a34e",
+    ".github/project-tools.json": "c83848358e862b66b67337ba406560a68fcf957378f835ce67b781d5c5a8d564"
   },
   "third_party_dependencies_added": [],
-  "scope": "Actual project tool versions only; no baselines; stdlib-only Python checker. Dependency validation is recorded separately.",
+  "scope": "Actual project tools, including pinned tools and explicit official-release watches for unpinned tools. No application dependency upgrade.",
   "unit": "passed",
+  "tests": 78,
   "live": {
     "status": "ok",
     "tools": [
+      {
+        "tool": "Wails CLI",
+        "tool_id": "wails",
+        "status": "update_available",
+        "published": false,
+        "version_basis": {
+          "mode": "pin",
+          "version": "3.0.0-beta.30",
+          "versions": [
+            "3.0.0-beta.30"
+          ],
+          "sources": [
+            {
+              "source": "build/tools/go.mod",
+              "versions": [
+                "3.0.0-beta.30"
+              ]
+            }
+          ]
+        },
+        "latest_stable_upstream": "3.1.0",
+        "latest": "3.1.0",
+        "security": true,
+        "evidence": [
+          {
+            "version": "3.0.0",
+            "url": "https://github.com/wailsapp/wails/releases/tag/v3.0.0",
+            "identifiers": [
+              "GHSA-259R-337F-4RFW",
+              "GHSA-2P5F-2GX8-MH8M",
+              "GHSA-587H-7WMJ-H5PM",
+              "GHSA-698V-4R3X-3VCV",
+              "GHSA-9JRQ-W75R-8GCW",
+              "GHSA-R825-W8MM-5PXW",
+              "GHSA-RQ7H-C2JC-7F22",
+              "GHSA-VFPM-58RQ-9QCG"
+            ]
+          },
+          {
+            "version": "3.0.0-beta.31",
+            "url": "https://github.com/wailsapp/wails/releases/tag/v3.0.0-beta.31",
+            "identifiers": []
+          }
+        ],
+        "title": "[安全修補優先] Wails CLI 3.1.0 已發布",
+        "body": "<!-- codex-skills:sbom-tool-update:wails:3.1.0 -->\n<!-- project-tool-security:6e30234456da28907de6 -->\n<!-- project-tool-release:wails:3.0.0 -->\n<!-- project-tool-release:wails:3.0.0-beta.31 -->\n<!-- project-tool-release:wails:3.0.0-beta.32 -->\n<!-- project-tool-release:wails:3.0.0-beta.33 -->\n<!-- project-tool-release:wails:3.0.0-beta.34 -->\n<!-- project-tool-release:wails:3.1.0 -->\n@SimonChung，SimonChung/yumo_editor 使用的 Wails CLI 有新版。\n\n目前來源版本：`3.0.0-beta.30`\n- 最新候選：[3.1.0](https://github.com/wailsapp/wails/releases/tag/v3.1.0)\n- 實際使用來源：`build/tools/go.mod`\n\n建議 24～48 小時內評估安全修補並驗證。\n\n安全修補線索（含中間版本；請依公告確認適用性）：\n\n- [3.0.0](https://github.com/wailsapp/wails/releases/tag/v3.0.0)：GHSA-259R-337F-4RFW, GHSA-2P5F-2GX8-MH8M, GHSA-587H-7WMJ-H5PM, GHSA-698V-4R3X-3VCV, GHSA-9JRQ-W75R-8GCW, GHSA-R825-W8MM-5PXW, GHSA-RQ7H-C2JC-7F22, GHSA-VFPM-58RQ-9QCG\n- [3.0.0-beta.31](https://github.com/wailsapp/wails/releases/tag/v3.0.0-beta.31)：官方發布紀錄標示安全修補\n\n新增或尚未採用版本：\n\n- [3.1.0](https://github.com/wailsapp/wails/releases/tag/v3.1.0)\n- [3.0.0](https://github.com/wailsapp/wails/releases/tag/v3.0.0)\n- [3.0.0-beta.34](https://github.com/wailsapp/wails/releases/tag/v3.0.0-beta.34)\n- [3.0.0-beta.33](https://github.com/wailsapp/wails/releases/tag/v3.0.0-beta.33)\n- [3.0.0-beta.32](https://github.com/wailsapp/wails/releases/tag/v3.0.0-beta.32)\n- [3.0.0-beta.31](https://github.com/wailsapp/wails/releases/tag/v3.0.0-beta.31)\n\n此通知不會自動升級。變更工具或映像後，須重新測試、核對 digest 並通過 SBOM，再提交推送。\n"
+      },
       {
         "status": "not_used",
         "tool": "Trivy",
@@ -43,28 +94,200 @@
             }
           ]
         }
+      },
+      {
+        "tool": "Git",
+        "tool_id": "git",
+        "status": "no_update",
+        "published": false,
+        "version_basis": {
+          "mode": "watch",
+          "started_at": "2026-11-12T00:47:30.111816+00:00",
+          "sources": [
+            {
+              "source": ".github/workflows/sbom-tool-versions.yml",
+              "versions": []
+            }
+          ],
+          "installed_version": null
+        },
+        "latest_stable_upstream": "2.56.1"
+      },
+      {
+        "tool": "Python",
+        "tool_id": "python",
+        "status": "no_update",
+        "published": false,
+        "version_basis": {
+          "mode": "watch",
+          "started_at": "2026-11-12T00:47:30.111816+00:00",
+          "sources": [
+            {
+              "source": ".github/workflows/sbom-tool-versions.yml",
+              "versions": []
+            }
+          ],
+          "installed_version": null
+        },
+        "latest_stable_upstream": "3.15.2"
+      },
+      {
+        "tool": "Node.js",
+        "tool_id": "node",
+        "status": "no_update",
+        "published": false,
+        "version_basis": {
+          "mode": "watch",
+          "started_at": "2026-11-12T00:47:30.111816+00:00",
+          "sources": [
+            {
+              "source": "frontend/package.json",
+              "versions": []
+            }
+          ],
+          "installed_version": null
+        },
+        "latest_stable_upstream": "26.13.1"
+      },
+      {
+        "tool": "npm",
+        "tool_id": "npm",
+        "status": "no_update",
+        "published": false,
+        "version_basis": {
+          "mode": "watch",
+          "started_at": "2026-11-12T00:47:30.111816+00:00",
+          "sources": [
+            {
+              "source": "Taskfile.yml",
+              "versions": []
+            }
+          ],
+          "installed_version": null
+        },
+        "latest_stable_upstream": "12.2.2"
+      },
+      {
+        "tool": "Task",
+        "tool_id": "task",
+        "status": "no_update",
+        "published": false,
+        "version_basis": {
+          "mode": "watch",
+          "started_at": "2026-11-12T00:47:30.111816+00:00",
+          "sources": [
+            {
+              "source": "Taskfile.yml",
+              "versions": []
+            }
+          ],
+          "installed_version": null
+        },
+        "latest_stable_upstream": "3.54.0"
+      },
+      {
+        "tool": "NSIS",
+        "tool_id": "nsis",
+        "status": "no_update",
+        "published": false,
+        "version_basis": {
+          "mode": "watch",
+          "started_at": "2026-11-12T00:47:30.111816+00:00",
+          "sources": [
+            {
+              "source": "build.bat",
+              "versions": []
+            }
+          ],
+          "installed_version": null
+        },
+        "latest_stable_upstream": "3.13"
+      },
+      {
+        "tool": "TypeScript",
+        "tool_id": "typescript",
+        "status": "no_update",
+        "published": false,
+        "version_basis": {
+          "mode": "pin",
+          "version": "7.0.2",
+          "versions": [
+            "7.0.2"
+          ],
+          "sources": [
+            {
+              "source": "frontend/package-lock.json",
+              "versions": [
+                "7.0.2"
+              ]
+            }
+          ]
+        },
+        "latest_stable_upstream": "7.0.2"
+      },
+      {
+        "tool": "Vite",
+        "tool_id": "vite",
+        "status": "update_available",
+        "published": false,
+        "version_basis": {
+          "mode": "pin",
+          "version": "8.3.4",
+          "versions": [
+            "8.3.4"
+          ],
+          "sources": [
+            {
+              "source": "frontend/package-lock.json",
+              "versions": [
+                "8.3.4"
+              ]
+            }
+          ]
+        },
+        "latest_stable_upstream": "8.3.8",
+        "latest": "8.3.8",
+        "security": false,
+        "evidence": [],
+        "title": "[一般版本更新] Vite 8.3.8 已發布",
+        "body": "<!-- codex-skills:sbom-tool-update:vite:8.3.8 -->\n<!-- project-tool-security:4f53cda18c2baa0c0354 -->\n<!-- project-tool-release:vite:8.3.5 -->\n<!-- project-tool-release:vite:8.3.6 -->\n<!-- project-tool-release:vite:8.3.7 -->\n<!-- project-tool-release:vite:8.3.8 -->\n@SimonChung，SimonChung/yumo_editor 使用的 Vite 有新版。\n\n目前來源版本：`8.3.4`\n- 最新候選：[8.3.8](https://www.npmjs.com/package/vite/v/8.3.8)\n- 實際使用來源：`frontend/package-lock.json`\n\n建議納入每月維護評估。\n\n\n新增或尚未採用版本：\n\n- [8.3.8](https://www.npmjs.com/package/vite/v/8.3.8)\n- [8.3.7](https://www.npmjs.com/package/vite/v/8.3.7)\n- [8.3.6](https://www.npmjs.com/package/vite/v/8.3.6)\n- [8.3.5](https://www.npmjs.com/package/vite/v/8.3.5)\n\n此通知不會自動升級。變更工具或映像後，須重新測試、核對 digest 並通過 SBOM，再提交推送。\n"
+      },
+      {
+        "tool": "Vite React plugin",
+        "tool_id": "vite-react",
+        "status": "update_available",
+        "published": false,
+        "version_basis": {
+          "mode": "pin",
+          "version": "6.1.2",
+          "versions": [
+            "6.1.2"
+          ],
+          "sources": [
+            {
+              "source": "frontend/package-lock.json",
+              "versions": [
+                "6.1.2"
+              ]
+            }
+          ]
+        },
+        "latest_stable_upstream": "6.3.0",
+        "latest": "6.3.0",
+        "security": false,
+        "evidence": [],
+        "title": "[一般版本更新] Vite React plugin 6.3.0 已發布",
+        "body": "<!-- codex-skills:sbom-tool-update:vite-react:6.3.0 -->\n<!-- project-tool-security:4f53cda18c2baa0c0354 -->\n<!-- project-tool-release:vite-react:6.2.0 -->\n<!-- project-tool-release:vite-react:6.2.1 -->\n<!-- project-tool-release:vite-react:6.3.0 -->\n@SimonChung，SimonChung/yumo_editor 使用的 Vite React plugin 有新版。\n\n目前來源版本：`6.1.2`\n- 最新候選：[6.3.0](https://www.npmjs.com/package/@vitejs/plugin-react/v/6.3.0)\n- 實際使用來源：`frontend/package-lock.json`\n\n建議納入每月維護評估。\n\n\n新增或尚未採用版本：\n\n- [6.3.0](https://www.npmjs.com/package/@vitejs/plugin-react/v/6.3.0)\n- [6.2.1](https://www.npmjs.com/package/@vitejs/plugin-react/v/6.2.1)\n- [6.2.0](https://www.npmjs.com/package/@vitejs/plugin-react/v/6.2.0)\n\n此通知不會自動升級。變更工具或映像後，須重新測試、核對 digest 並通過 SBOM，再提交推送。\n"
       }
     ]
   },
   "diff": "passed",
-  "tests": 45,
   "existing_dependency_validation": {
-    "report": "work/actual-tools/yumo-sbom/summary.json",
-    "summary": {
-      "status": "passed",
-      "scope": "Fresh HIGH/CRITICAL scan of existing SBOMs after matching all module/lockfile and binary hashes; inventory generation and functionality tests remain from 2026-11-11.",
-      "manifest_hashes_match": true,
-      "binary_hashes_match": true,
-      "high_critical": 0,
-      "remaining_unrated_advisory": [
-        {
-          "id": "GO-2026-6905",
-          "severity": "UNRATED",
-          "summary": "Panic on negative member size in Reader.Read in github.com/blakesmith/ar",
-          "url": "https://pkg.go.dev/vuln/GO-2026-6905"
-        }
-      ],
-      "trivy": "aquasec/trivy:0.76.2@sha256:8f6bb947dbc528902e11f2f5be52f7b519f6a39d5d148f41166f2040499768fb"
-    }
+    "status": "passed",
+    "scan_at": "2026-11-12T00:51:42.055710+00:00",
+    "high_critical": 0,
+    "scope": "Fresh scans of five SBOMs after exact manifest/lockfile and binary hash matching. SBOM generation and functional validation remain from 2026-11-11.",
+    "remaining_unrated_advisory": "GO-2026-6905 (github.com/blakesmith/ar, existing Wails transitive dependency; no fix recorded).",
+    "reports": "/Users/simon/Documents/Codex/2026-11-11/7/work/all-tools/yumo-sbom"
   }
 }

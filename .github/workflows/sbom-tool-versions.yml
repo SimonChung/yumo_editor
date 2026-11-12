@@ -21,7 +21,7 @@ concurrency:
 jobs:
   check:
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 20
     permissions:
       contents: read
       issues: write
@@ -48,14 +48,14 @@ jobs:
           git checkout --detach FETCH_HEAD
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
       - name: Test version checks and duplicate prevention
-        run: python3 -B -m unittest discover -s .github/tests -p 'test_sbom_tool_versions.py' -v
-      - name: Check Trivy and Go official versions and publish new findings
+        run: python3 -B -m unittest discover -s .github/tests -p 'test_*tool_versions.py' -v
+      - name: Check actual project tools and publish new findings
         env:
           GH_TOKEN: ${{ github.token }}
           DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || false }}
         run: |
           if [ "$DRY_RUN" = true ]; then
-            python3 scripts/check_sbom_tool_versions.py
+            python3 scripts/check_project_tool_versions.py
           else
-            python3 scripts/check_sbom_tool_versions.py --publish
+            python3 scripts/check_project_tool_versions.py --publish
           fi

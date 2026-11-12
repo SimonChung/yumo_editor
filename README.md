@@ -206,6 +206,6 @@ Go 使用自動工具鏈切換：本專案內 `go version` 為 1.27.2；本機 `
 
 ## 專案工具版本巡檢
 
-GitHub Actions 每週只檢查本專案實際使用的 Go，有新版才通知，安全修補優先。設定與通知方式見[巡檢說明](.github/SBOM_TOOL_MONITOR.md)。
+GitHub Actions 每週檢查本專案實際使用的工具；固定版本依來源比較，未固定工具追蹤啟用後的新發布。有新版才通知，安全修補優先。工具清單、來源與通知去重方式見[巡檢說明](.github/SBOM_TOOL_MONITOR.md)。
 
 2026-11-11 升級 Go 1.27.4 並鎖定修補後的 Wails 建置工具；功能測試、SBOM 覆蓋與保留的上游公告見[驗證紀錄](docs/validation/go-1.27.4-20261111.md)。
