@@ -1,4 +1,4 @@
-name: Trivy and Go versions
+name: Project tool versions
 
 on:
   schedule:

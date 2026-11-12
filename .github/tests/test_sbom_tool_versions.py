@@ -44,7 +44,7 @@ class FakeGitHub:
 
 class VersionMonitorTests(unittest.TestCase):
     def setUp(self):
-        self.pin = patch.object(monitor, 'current_version', return_value='0.76.2')
+        self.pin = patch.object(monitor, 'current_pin', return_value={'mode': 'scanner_pin', 'version': '0.76.2', 'sources': ['scanner.py']})
         self.pin.start()
         self.addCleanup(self.pin.stop)
 
@@ -165,7 +165,7 @@ class ScannerPinTests(unittest.TestCase):
     def config(self, root, sources, **extra):
         (root / '.github').mkdir(exist_ok=True)
         (root / '.github/sbom-tool-monitor.json').write_text(json.dumps({
-            'schema_version': 1, 'pin_sources': sources, **extra}))
+            'schema_version': 2, 'tools': {'trivy': {'pin_sources': sources, **extra}}}))
 
     def test_pin_is_read_without_executing_script(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -187,11 +187,12 @@ class ScannerPinTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 monitor.current_pin(root)
 
-    def test_baseline_is_explicit_and_optional_source_takes_precedence(self):
+    def test_go_version_guard_is_required_and_follows_actual_pin(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            self.config(root, [{'kind': 'go_version_guard', 'path': 'image.go', 'optional': True}], baseline='0.76.2')
-            self.assertEqual(monitor.current_pin(root)['mode'], 'release_baseline')
+            self.config(root, [{'kind': 'go_version_guard', 'path': 'image.go'}])
+            with self.assertRaises(FileNotFoundError):
+                monitor.current_pin(root)
             (root / 'image.go').write_text('if tool.Version != "0.77.0" {\n')
             self.assertEqual(monitor.current_pin(root), {'mode': 'scanner_pin', 'version': '0.77.0', 'sources': ['image.go']})
             (root / 'image.go').write_text('invalid guard')
@@ -201,7 +202,7 @@ class ScannerPinTests(unittest.TestCase):
     def test_missing_required_source_cannot_fall_back(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            self.config(root, [{'kind': 'trivy_image', 'path': 'missing'}], baseline='0.76.2')
+            self.config(root, [{'kind': 'trivy_image', 'path': 'missing'}])
             with self.assertRaises(FileNotFoundError):
                 monitor.current_pin(root)
             self.config(root, [])
@@ -211,7 +212,7 @@ class ScannerPinTests(unittest.TestCase):
     def test_source_traversal_and_disagreement_fail(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            self.config(root, [{'kind': 'trivy_image', 'path': '../outside', 'optional': True}])
+            self.config(root, [{'kind': 'trivy_image', 'path': '../outside'}])
             with self.assertRaises(ValueError):
                 monitor.current_pin(root)
             for filename, value in [('a', '0.76.2'), ('b', '0.76.3')]:
@@ -239,13 +240,14 @@ class GoPinTests(unittest.TestCase):
     def config(self, root, sources, **extra):
         (root / '.github').mkdir(exist_ok=True)
         (root / '.github/sbom-tool-monitor.json').write_text(json.dumps({
-            'schema_version': 1, 'pin_sources': [], 'go': {'pin_sources': sources, **extra}}))
+            'schema_version': 2, 'tools': {'go': {'pin_sources': sources, **extra}}}))
 
-    def test_explicit_baseline_switches_to_actual_module(self):
+    def test_module_version_requires_an_actual_source(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            self.config(root, [{'kind': 'go_mod', 'path': 'go.mod', 'optional': True}], baseline='1.27.4')
-            self.assertEqual(monitor.current_go_pin(root)['mode'], 'release_baseline')
+            self.config(root, [{'kind': 'go_mod', 'path': 'go.mod'}])
+            with self.assertRaises(FileNotFoundError):
+                monitor.current_go_pin(root)
             (root / 'go.mod').write_text('module demo\ngo 1.27.5\n')
             self.assertEqual(monitor.current_go_pin(root)['version'], '1.27.5')
             self.assertEqual(monitor.current_go_pin(root)['mode'], 'go_pins')
@@ -265,7 +267,7 @@ class GoPinTests(unittest.TestCase):
     def test_required_missing_invalid_and_unconfigured_sources_fail(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            self.config(root, [{'kind': 'go_mod', 'path': 'go.mod'}], baseline='1.27.4')
+            self.config(root, [{'kind': 'go_mod', 'path': 'go.mod'}])
             with self.assertRaises(FileNotFoundError):
                 monitor.current_go_pin(root)
             for text in ['module demo', 'go 1.27rc1', 'go 1.27.4\ngo 1.27.5', 'go 1.27.4\ntoolchain go1.28rc1']:
@@ -279,7 +281,7 @@ class GoPinTests(unittest.TestCase):
     def test_source_escape_and_non_exact_ci_are_rejected(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            self.config(root, [{'kind': 'go_mod', 'path': '../outside', 'optional': True}], baseline='1.27.4')
+            self.config(root, [{'kind': 'go_mod', 'path': '../outside'}])
             with self.assertRaises(ValueError):
                 monitor.current_go_pin(root)
             for kind, text in [('go_ci', 'go-version: stable'), ('go_ci', 'go-version: 1.27.x'), ('go_image', 'FROM golang:latest')]:
@@ -404,12 +406,11 @@ class GoNotificationTests(unittest.TestCase):
         self.assertEqual(self.run_check(api, releases)['status'], 'already_reported')
         self.assertEqual(api.writes, [])
 
-    def test_baseline_is_honest_and_dry_run_is_read_only(self):
-        pin = {'mode': 'release_baseline', 'version': '1.27.4', 'versions': ['1.27.4'], 'pins': []}
+    def test_dry_run_is_read_only_and_uses_actual_source(self):
         api = FakeGitHub([])
-        with patch.object(monitor, 'current_go_pin', return_value=pin):
-            result = self.run_check(api, [go_release('1.27.5')], publish=False)
-        self.assertIn('不表示專案已使用 Go', result['body'])
+        result = self.run_check(api, [go_release('1.27.5')], publish=False)
+        self.assertIn('go.mod', result['body'])
+        self.assertNotIn('基準', result['body'])
         self.assertFalse(result['published'])
         self.assertEqual(api.writes, [])
 
@@ -424,6 +425,67 @@ class GoNotificationTests(unittest.TestCase):
         with patch.object(monitor, 'check', return_value={'tool': 'Trivy', 'status': 'no_update'}), patch.object(monitor, 'current_pin', return_value={}), patch.object(monitor, 'check_go', side_effect=ValueError('bad Go metadata')), patch('sys.argv', ['check', '--repository', REPO]), patch('sys.stdout', new_callable=io.StringIO) as out:
             self.assertEqual(monitor.main(), 1)
             self.assertEqual([t['status'] for t in json.loads(out.getvalue())['tools']], ['no_update', 'failed'])
+
+
+class ActualToolTests(unittest.TestCase):
+    def config(self, root, tools):
+        (root / '.github').mkdir(exist_ok=True)
+        (root / '.github/sbom-tool-monitor.json').write_text(json.dumps({'schema_version': 2, 'tools': tools}))
+
+    def test_no_tools_performs_no_network_requests_or_issue_writes(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            self.config(root, {})
+            with patch.object(monitor, 'ROOT', root), patch.object(monitor, 'urlopen', side_effect=AssertionError('Unused tools must not access the network')), patch('sys.argv', ['check', '--repository', REPO, '--publish']), patch.dict(monitor.os.environ, {'GH_TOKEN': 'test-only'}), patch('sys.stdout', new_callable=io.StringIO) as out:
+                self.assertEqual(monitor.main(), 0)
+            tools = json.loads(out.getvalue())['tools']
+            self.assertEqual([t['status'] for t in tools], ['not_used', 'not_used'])
+            self.assertTrue(all(not t['published'] and 'current' not in t for t in tools))
+
+    def test_trivy_only_never_checks_go(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            self.config(root, {'trivy': {'pin_sources': [{'kind': 'trivy_image', 'path': 'scanner'}]}})
+            (root / 'scanner').write_text('aquasec/trivy:0.76.2@' + DIGEST)
+            api = FakeGitHub([release('v0.76.3')])
+            with patch.object(monitor, 'ROOT', root), patch.object(monitor, 'newer_go_releases', side_effect=AssertionError('Go is unused')):
+                self.assertEqual(monitor.check_go(api, REPO, 'example', publish=True)['status'], 'not_used')
+                self.assertTrue(monitor.check(api, REPO, 'example', publish=True, digest_reader=lambda _: DIGEST)['published'])
+            self.assertEqual(len(api.writes), 1)
+            self.assertIn('Trivy', api.writes[0][2]['title'])
+
+    def test_go_only_never_checks_trivy(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            self.config(root, {'go': {'pin_sources': [{'kind': 'go_mod', 'path': 'go.mod'}]}})
+            (root / 'go.mod').write_text('module demo\ngo 1.27.4\n')
+            api = FakeGitHub([])
+            with patch.object(monitor, 'ROOT', root), patch.object(api, 'pages', side_effect=AssertionError('Trivy is unused')):
+                self.assertEqual(monitor.check(api, REPO, 'example', publish=True)['status'], 'not_used')
+                self.assertEqual(monitor.check_go(api, REPO, 'example', release_reader=lambda _: [])['status'], 'no_update')
+            self.assertEqual(api.writes, [])
+
+    def test_baselines_optional_sources_and_typos_are_rejected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for settings in [{'pin_sources': [], 'baseline': '1.27.4'}, {'pin_sources': [{'kind': 'go_mod', 'path': 'go.mod', 'optional': True}]}, {'pin_sources': []}]:
+                self.config(root, {'go': settings})
+                with self.subTest(settings=settings), self.assertRaises(ValueError):
+                    monitor.current_go_pin(root)
+            self.config(root, {'Go': {'pin_sources': []}})
+            with self.assertRaises(ValueError):
+                monitor.current_go_pin(root)
+            (root / '.github/sbom-tool-monitor.json').write_text(json.dumps({'schema_version': 1, 'pin_sources': [], 'baseline': '0.76.2'}))
+            with self.assertRaises(ValueError):
+                monitor.current_pin(root)
+
+    def test_enabled_missing_source_fails_instead_of_becoming_unused(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            self.config(root, {'go': {'pin_sources': [{'kind': 'go_mod', 'path': 'missing.go.mod'}]}})
+            with patch.object(monitor, 'ROOT', root), patch.object(monitor, 'urlopen', side_effect=AssertionError('No request after a source failure')), patch('sys.argv', ['check', '--repository', REPO]), patch('sys.stdout', new_callable=io.StringIO) as out:
+                self.assertEqual(monitor.main(), 1)
+            self.assertEqual([t['status'] for t in json.loads(out.getvalue())['tools']], ['not_used', 'failed'])
 
 
 if __name__ == '__main__':

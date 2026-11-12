@@ -1,29 +1,21 @@
 {
-  "checked_at": "2026-11-11T04:13:03.606136+00:00",
+  "checked_at": "2026-11-12T00:14:29.260745+00:00",
   "source_hashes": {
-    "scripts/check_sbom_tool_versions.py": "890a0df364bf2d44629d81b5227e27c81cd7dbc8da5801e0194847e89741de6f",
-    ".github/tests/test_sbom_tool_versions.py": "d836ab439aa50d37f24a62ca46285882671ad03fa66d8416749775e956d21270",
-    ".github/workflows/sbom-tool-versions.yml": "b9cb97580479af5e3209c1425ff9e60eff77cef41023607e3359fc31e3e581c5",
-    ".github/sbom-tool-monitor.json": "b1e68d2b048a22e470c12dbc93cba6a4221ae77359db809a38f1160ef119f587"
+    "scripts/check_sbom_tool_versions.py": "f9dab52443d8afcbe572584d07292ce0db5bb4caef7721a52c14d9e7a8389186",
+    ".github/tests/test_sbom_tool_versions.py": "197f35295275f8626bce3c69a1f7dea592fdf76b0d67716fc4dacecdefd1402b",
+    ".github/workflows/sbom-tool-versions.yml": "7cd7e975f70f27ab8bd6d41fbc12eb0969b27b83b52f0e0cb9a0b6825abed691",
+    ".github/sbom-tool-monitor.json": "727b674bb1efd0799af3075c9649e83e3760d9c106dbcd5c00b7dc317359a34e"
   },
   "third_party_dependencies_added": [],
-  "scope": "Trivy and Go release monitor; stdlib-only Python checker. Existing application dependency SBOMs are tracked separately.",
+  "scope": "Actual project tool versions only; no baselines; stdlib-only Python checker. Dependency validation is recorded separately.",
   "unit": "passed",
   "live": {
     "status": "ok",
     "tools": [
       {
-        "status": "no_update",
+        "status": "not_used",
         "tool": "Trivy",
-        "current": "0.76.2",
-        "published": false,
-        "version_basis": {
-          "mode": "release_baseline",
-          "version": "0.76.2",
-          "sources": [
-            ".github/sbom-tool-monitor.json"
-          ]
-        }
+        "published": false
       },
       {
         "status": "no_update",
@@ -55,20 +47,24 @@
     ]
   },
   "diff": "passed",
-  "tests": 40,
+  "tests": 45,
   "existing_dependency_validation": {
-    "mode": "unchanged_dependency_evidence_reused",
-    "report": "docs/validation/go-1.27.4-20261111.json",
-    "manifest_hashes_match": true,
-    "high_critical": 0,
-    "remaining_advisories": [
-      {
-        "id": "GO-2026-6905",
-        "severity": "UNRATED",
-        "summary": "Panic on negative member size in Reader.Read in github.com/blakesmith/ar",
-        "url": "https://pkg.go.dev/vuln/GO-2026-6905"
-      }
-    ],
-    "scope": "Only the Python stdlib version monitor changed in this task; application sources, modules and lockfiles unchanged."
+    "report": "work/actual-tools/yumo-sbom/summary.json",
+    "summary": {
+      "status": "passed",
+      "scope": "Fresh HIGH/CRITICAL scan of existing SBOMs after matching all module/lockfile and binary hashes; inventory generation and functionality tests remain from 2026-11-11.",
+      "manifest_hashes_match": true,
+      "binary_hashes_match": true,
+      "high_critical": 0,
+      "remaining_unrated_advisory": [
+        {
+          "id": "GO-2026-6905",
+          "severity": "UNRATED",
+          "summary": "Panic on negative member size in Reader.Read in github.com/blakesmith/ar",
+          "url": "https://pkg.go.dev/vuln/GO-2026-6905"
+        }
+      ],
+      "trivy": "aquasec/trivy:0.76.2@sha256:8f6bb947dbc528902e11f2f5be52f7b519f6a39d5d148f41166f2040499768fb"
+    }
   }
 }

@@ -42,19 +42,38 @@ def python_scanner_version(path: Path) -> str:
     raise ValueError('Missing SCANNER pin')
 
 
-def current_pin(root: Path | None = None) -> dict:
-    root = (root or ROOT).resolve()
+def tool_settings(root: Path, tool: str) -> dict | None:
     config = json.loads((root / '.github/sbom-tool-monitor.json').read_text(encoding='utf-8'))
-    if config.get('schema_version') != 1 or not isinstance(config.get('pin_sources'), list):
-        raise ValueError('Invalid SBOM tool monitor configuration')
+    if not isinstance(config, dict) or set(config) != {'schema_version', 'tools'} or config['schema_version'] != 2:
+        raise ValueError('Expected schema 2 with explicit tools; release baselines are not supported')
+    settings = config['tools']
+    if not isinstance(settings, dict) or set(settings) - {'trivy', 'go'}:
+        raise ValueError('Unknown tool or invalid tools configuration')
+    if tool not in settings:
+        return None
+    selected = settings[tool]
+    if not isinstance(selected, dict) or set(selected) != {'pin_sources'}:
+        raise ValueError(f'{tool} must declare actual pin_sources; no release baseline is allowed')
+    sources = selected['pin_sources']
+    if not isinstance(sources, list) or not sources:
+        raise ValueError(f'{tool} requires at least one actual version source')
+    for source in sources:
+        if not isinstance(source, dict) or set(source) != {'kind', 'path'} or not all(isinstance(v, str) and v for v in source.values()):
+            raise ValueError('Every enabled version source requires kind/path; optional sources are not supported')
+    return selected
+
+
+def current_pin(root: Path | None = None) -> dict | None:
+    root = (root or ROOT).resolve()
+    settings = tool_settings(root, 'trivy')
+    if settings is None:
+        return None
     found = []
-    for source in config['pin_sources']:
+    for source in settings['pin_sources']:
         relative = Path(source['path'])
         path = (root / relative).resolve()
         if relative.is_absolute() or not path.is_relative_to(root):
             raise ValueError('Scanner source must be inside the repository')
-        if not path.exists() and source.get('optional') is True:
-            continue
         kind = source['kind']
         if kind == 'python_scanner':
             value = python_scanner_version(path)
@@ -71,19 +90,16 @@ def current_pin(root: Path | None = None) -> dict:
             value = values.pop()
         version(value)
         found.append({'version': value, 'source': relative.as_posix()})
-    if found:
-        if len({item['version'] for item in found}) != 1:
-            raise ValueError('Scanner source versions disagree')
-        return {'mode': 'scanner_pin', 'version': found[0]['version'], 'sources': [item['source'] for item in found]}
-    baseline = config.get('baseline')
-    if not isinstance(baseline, str):
-        raise ValueError('No scanner source or explicit release-monitor baseline')
-    version(baseline)
-    return {'mode': 'release_baseline', 'version': baseline, 'sources': ['.github/sbom-tool-monitor.json']}
+    if len({item['version'] for item in found}) != 1:
+        raise ValueError('Scanner source versions disagree')
+    return {'mode': 'scanner_pin', 'version': found[0]['version'], 'sources': [item['source'] for item in found]}
 
 
-def current_version(path: Path | None = None) -> str:
-    return python_scanner_version(path) if path is not None else current_pin()['version']
+def current_version(path: Path | None = None) -> str | None:
+    if path is not None:
+        return python_scanner_version(path)
+    pin = current_pin()
+    return pin['version'] if pin is not None else None
 
 
 def go_version(value: str) -> str:
@@ -93,20 +109,17 @@ def go_version(value: str) -> str:
     return '.'.join(str(int(part or '0')) for part in match.groups())
 
 
-def current_go_pin(root: Path | None = None) -> dict:
+def current_go_pin(root: Path | None = None) -> dict | None:
     root = (root or ROOT).resolve()
-    config = json.loads((root / '.github/sbom-tool-monitor.json').read_text(encoding='utf-8'))
-    settings = config.get('go')
-    if config.get('schema_version') != 1 or not isinstance(settings, dict) or not isinstance(settings.get('pin_sources'), list):
-        raise ValueError('Missing or invalid Go release monitor configuration')
+    settings = tool_settings(root, 'go')
+    if settings is None:
+        return None
     pins = []
     for source in settings['pin_sources']:
         relative = Path(source['path'])
         path = (root / relative).resolve()
         if relative.is_absolute() or not path.is_relative_to(root):
             raise ValueError('Go source must be inside the repository')
-        if not path.exists() and source.get('optional') is True:
-            continue
         content = path.read_text(encoding='utf-8')
         kind = source['kind']
         if kind == 'go_mod':
@@ -123,14 +136,8 @@ def current_go_pin(root: Path | None = None) -> dict:
         if not values:
             raise ValueError(f'Missing pinned Go version in {relative}')
         pins.append({'source': relative.as_posix(), 'versions': sorted({go_version(v) for v in values}, key=version)})
-    if pins:
-        versions = sorted({v for pin in pins for v in pin['versions']}, key=version)
-        return {'mode': 'go_pins', 'version': versions[0], 'versions': versions, 'pins': pins}
-    baseline = settings.get('baseline')
-    if not isinstance(baseline, str):
-        raise ValueError('No Go source or explicit release-monitor baseline')
-    value = go_version(baseline)
-    return {'mode': 'release_baseline', 'version': value, 'versions': [value], 'pins': []}
+    versions = sorted({v for pin in pins for v in pin['versions']}, key=version)
+    return {'mode': 'go_pins', 'version': versions[0], 'versions': versions, 'pins': pins}
 
 
 class GoHistory(HTMLParser):
@@ -308,7 +315,7 @@ def issue_content(current: str, releases: list[dict], digest: str, assignee: str
     priority = '安全修補優先' if evidence else '一般版本更新'
     title = f'[{priority}] Trivy {latest} 已發布（目前 {current}）'
     lines = [marker, f'@{assignee}，{repository} 追蹤的 Trivy 有新正式版本。', '',
-             f'- 目前採用版本／巡檢基準：`{current}`（來源見 `.github/sbom-tool-monitor.json`）', f'- 最新正式版：`{latest}`',
+             f'- 目前採用版本：`{current}`（來源見 `.github/sbom-tool-monitor.json`）', f'- 最新正式版：`{latest}`',
              f'- 發布時間：{releases[0]["published_at"]}',
              f'- 新版映像：`aquasec/trivy:{latest}@{digest}`',
              '- 已確認多架構索引包含 linux/amd64 與 linux/arm64。', '',
@@ -331,9 +338,12 @@ def check(api: GitHub, repository: str, assignee: str, *, publish: bool = False,
         raise ValueError('Expected owner/repository')
     if not re.fullmatch(r'[A-Za-z0-9-]+', assignee):
         raise ValueError('Expected a GitHub assignee login')
-    current = current_version()
+    basis = current_pin()
+    if basis is None:
+        return {'status': 'not_used', 'tool': 'Trivy', 'published': False}
+    current = basis['version']
     releases = newer_releases(api.pages(f'/repos/{UPSTREAM}/releases'), current)
-    result = {'status': 'no_update', 'tool': 'Trivy', 'current': current, 'published': False}
+    result = {'status': 'no_update', 'tool': 'Trivy', 'current': current, 'published': False, 'version_basis': basis}
     if not releases:
         return result
     latest = releases[0]['tag_name'].removeprefix('v')
@@ -377,6 +387,8 @@ def check_go(api: GitHub, repository: str, assignee: str, *, publish: bool = Fal
     if not re.fullmatch(r'[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+', repository) or not re.fullmatch(r'[A-Za-z0-9-]+', assignee):
         raise ValueError('Expected owner/repository and GitHub assignee login')
     basis = current_go_pin()
+    if basis is None:
+        return {'status': 'not_used', 'tool': 'Go', 'published': False}
     current = basis['version']
     releases = (release_reader or newer_go_releases)(current)
     result = {'status': 'no_update', 'tool': 'Go', 'current': current, 'published': False, 'version_basis': basis}
@@ -394,13 +406,10 @@ def check_go(api: GitHub, repository: str, assignee: str, *, publish: bool = Fal
     priority = '安全修補優先' if evidence else '一般版本更新'
     title = f'[{priority}] Go {latest} 已發布（目前 {current}）'
     lines = [marker, f'@{assignee}，{repository} 追蹤的 Go 有新正式版本。', '',
-             f'- 目前最低採用版本／巡檢基準：`{current}`', f'- 最新正式版：`{latest}`',
+             f'- 目前最低採用版本：`{current}`', f'- 最新正式版：`{latest}`',
              f'- 發布日期：{releases[0]["published_at"]}', '- [官方下載及 SHA-256](https://go.dev/dl/)', '']
-    if basis['pins']:
-        lines += ['專案版本來源（go.mod 為最低需求，toolchain／CI／映像另列）：', '']
-        lines += [f'- `{pin["source"]}`：' + ', '.join(pin['versions']) for pin in basis['pins']]
-    else:
-        lines += ['此專案尚無設定的 Go 版本來源，以 `.github/sbom-tool-monitor.json` 的基準追蹤新版；不表示專案已使用 Go。']
+    lines += ['專案版本來源（go.mod 為最低需求，toolchain／CI／映像另列）：', '']
+    lines += [f'- `{pin["source"]}`：' + ', '.join(pin['versions']) for pin in basis['pins']]
     lines += ['', '建議於 24～48 小時內評估安全修補。' if evidence else '建議納入每月工具更新窗口。', '']
     if evidence:
         lines += ['官方發布紀錄中的安全修補線索（含中間版本；實際影響以官方公告為準）：', '']
@@ -408,7 +417,7 @@ def check_go(api: GitHub, repository: str, assignee: str, *, publish: bool = Fal
     lines += ['', '尚未採用的正式版本（安全修補優先）：', '']
     lines += [f'- [{r["tag_name"]}]({r["html_url"]}) — {r["published_at"]}' for r in sorted(releases, key=lambda r: not bool(security_evidence([r])))]
     lines += ['', '更新 go.mod／工具模組／CI；有 Go 建置映像時同步固定版本與 digest，重新跑建置、測試及 SBOM，通過後提交推送。',
-              '此 Issue 僅通知新版，不會自動升級。已讀的基準通知可關閉，後續同版本不再重複提醒。']
+              '此 Issue 僅通知新版，不會自動升級。同版本不再重複提醒。']
     body = '\n'.join(lines) + '\n'
     result.update(status='security_escalation' if existing else 'update_available', title=title, body=body)
     return publish_issue(api, repository, assignee, existing, title, body, result) if publish else result
@@ -431,8 +440,6 @@ def main() -> int:
         for name, checker in [('Trivy', check), ('Go', check_go)]:
             try:
                 item = checker(api, args.repository, args.assignee, publish=args.publish)
-                if name == 'Trivy':
-                    item['version_basis'] = current_pin()
             except (OSError, ValueError, KeyError, TypeError) as exc:
                 item = {'tool': name, 'status': 'failed', 'error': str(exc)}
             results.append(item)
