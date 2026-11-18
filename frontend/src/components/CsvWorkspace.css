@@ -1,0 +1,58 @@
+.csv-preview-pane {
+    overflow: auto;
+    padding: 16px;
+    color: #dbe4ef;
+    text-align: left;
+}
+
+.csv-preview-pane table {
+    min-width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-left: 1px solid #334155;
+}
+
+.csv-preview-pane th,
+.csv-preview-pane td {
+    min-width: 3em;
+    max-width: 30em;
+    padding: 0.4em 0.75em;
+    border-right: 1px solid #334155;
+    border-bottom: 1px solid #334155;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    vertical-align: top;
+}
+
+.csv-preview-pane th {
+    position: sticky;
+    top: 0;
+    background: #1e293b;
+    border-top: 1px solid #334155;
+}
+
+.csv-preview-pane p {
+    margin: 0;
+    color: #cbd5e1;
+}
+
+.csv-pagination {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.csv-pagination button {
+    padding: 4px 9px;
+    color: inherit;
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.csv-pagination button:disabled {
+    opacity: 0.5;
+    cursor: default;
+}

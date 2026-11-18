@@ -90,29 +90,12 @@
         }
       ]
     },
-    "vite": {
+    "esbuild": {
       "mode": "pin",
       "sources": [
         {
-          "path": "frontend/package-lock.json",
-          "pointer": [
-            "packages",
-            "node_modules/vite",
-            "version"
-          ]
-        }
-      ]
-    },
-    "vite-react": {
-      "mode": "pin",
-      "sources": [
-        {
-          "path": "frontend/package-lock.json",
-          "pointer": [
-            "packages",
-            "node_modules/@vitejs/plugin-react",
-            "version"
-          ]
+          "path": "build/tools/go.mod",
+          "pattern": "^\\s*github\\.com/evanw/esbuild v(?P<version>\\S+)"
         }
       ]
     }

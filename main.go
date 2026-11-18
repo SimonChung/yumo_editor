@@ -3,6 +3,8 @@ package main
 import (
 	"embed"
 	"log"
+	"net/http"
+	"net/http/httputil"
 	"os"
 
 	"github.com/wailsapp/wails/v3/pkg/application"
@@ -21,6 +23,17 @@ func main() {
 	}
 	app.queueLaunchFiles(os.Args, workingDir)
 
+	assetHandler := application.AssetFileServerFS(assets)
+	if proxy, ok := assetHandler.(*httputil.ReverseProxy); ok {
+		// The Windows WebView uses wails.localhost. Forward the dev server's
+		// own Host header when Wails proxies asset requests to esbuild.
+		direct := proxy.Director
+		proxy.Director = func(req *http.Request) {
+			direct(req)
+			req.Host = req.URL.Host
+		}
+	}
+
 	// Create application with options
 	wailsApp := application.New(application.Options{
 		Name: "YuMo Editor",
@@ -31,7 +44,7 @@ func main() {
 			},
 		},
 		Assets: application.AssetOptions{
-			Handler: application.AssetFileServerFS(assets),
+			Handler: assetHandler,
 		},
 		Services: []application.Service{
 			application.NewService(app),

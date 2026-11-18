@@ -7,6 +7,7 @@ import { TabList } from './components/TabList';
 import { Editor } from './components/Editor';
 import { MarkdownWorkspace } from './components/MarkdownWorkspace';
 import { SvgWorkspace } from './components/SvgWorkspace';
+import { CsvWorkspace } from './components/CsvWorkspace';
 import { StatusBar } from './components/StatusBar';
 
 // 匯入 Wails v3 自動生成的 Go 橋接方法
@@ -56,6 +57,7 @@ function App() {
 
     const isMarkdownFile = (fileName: string) => /\.md(?:own)?$/i.test(fileName);
     const isSvgFile = (fileName: string) => /\.svg$/i.test(fileName);
+    const isCsvFile = (fileName: string) => /\.csv$/i.test(fileName);
 
     // 4. 新建空白分頁 (New File)
     const handleNewFile = () => {
@@ -353,6 +355,13 @@ function App() {
                     />
                 ) : isSvgFile(activeTab.name) ? (
                     <SvgWorkspace
+                        content={activeTab.content}
+                        onChange={handleContentChange}
+                        fontSize={fontSize}
+                    />
+                ) : isCsvFile(activeTab.name) ? (
+                    <CsvWorkspace
+                        key={activeTab.id}
                         content={activeTab.content}
                         onChange={handleContentChange}
                         fontSize={fontSize}

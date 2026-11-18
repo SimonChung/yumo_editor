@@ -1,26 +1,11 @@
-import React, { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import DOMPurify from 'dompurify';
 import { marked } from 'marked';
-import { Editor } from './Editor';
+import { PreviewWorkspace, type WorkspaceProps } from './PreviewWorkspace';
 import './MarkdownWorkspace.css';
 
-type MarkdownView = 'edit' | 'split' | 'preview';
-
-interface MarkdownWorkspaceProps {
-    content: string;
-    onChange: (value: string) => void;
-    fontSize: number;
-}
-
-const viewLabels: Record<MarkdownView, string> = {
-    edit: '編輯',
-    split: '分割預覽',
-    preview: '預覽',
-};
-
-export const MarkdownWorkspace: React.FC<MarkdownWorkspaceProps> = ({ content, onChange, fontSize }) => {
-    const [view, setView] = useState<MarkdownView>('split');
-
+export function MarkdownWorkspace(props: WorkspaceProps) {
+    const { content } = props;
     const previewHtml = useMemo(() => {
         const rendered = marked.parse(content, {
             async: false,
@@ -34,44 +19,8 @@ export const MarkdownWorkspace: React.FC<MarkdownWorkspaceProps> = ({ content, o
     }, [content]);
 
     return (
-        <section className="markdown-workspace" aria-label="Markdown editor and preview">
-            <div className="markdown-toolbar" role="toolbar" aria-label="Markdown view mode">
-                {(Object.keys(viewLabels) as MarkdownView[]).map((mode) => (
-                    <button
-                        key={mode}
-                        type="button"
-                        className={`markdown-view-button ${view === mode ? 'active' : ''}`}
-                        onClick={() => setView(mode)}
-                        aria-pressed={view === mode}
-                    >
-                        {viewLabels[mode]}
-                    </button>
-                ))}
-            </div>
-
-            <div className={`markdown-content markdown-content-${view}`}>
-                {view !== 'preview' && (
-                    <div className="markdown-editor-pane">
-                        <Editor
-                            content={content}
-                            onChange={onChange}
-                            fontSize={fontSize}
-                            language="markdown"
-                            embedded
-                        />
-                    </div>
-                )}
-
-                {view === 'split' && <div className="markdown-pane-divider" />}
-
-                {view !== 'edit' && (
-                    <article
-                        className="markdown-preview-pane"
-                        style={{ fontSize: `${fontSize}px` }}
-                        dangerouslySetInnerHTML={{ __html: previewHtml }}
-                    />
-                )}
-            </div>
-        </section>
+        <PreviewWorkspace {...props} format="Markdown" language="markdown">
+            <article dangerouslySetInnerHTML={{ __html: previewHtml }} />
+        </PreviewWorkspace>
     );
-};
+}

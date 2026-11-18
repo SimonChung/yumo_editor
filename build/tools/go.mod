@@ -49,6 +49,7 @@ require (
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
 	github.com/erikgeiser/coninput v0.0.0-20211004153227-1c3628e74d0f // indirect
+	github.com/evanw/esbuild v0.28.2 // indirect
 	github.com/fatih/color v1.18.0 // indirect
 	github.com/go-git/gcfg v1.5.1-0.20230307220236-3a3c6141e376 // indirect
 	github.com/go-git/go-billy/v5 v5.9.0 // indirect
@@ -146,7 +147,10 @@ require (
 	mvdan.cc/sh/v3 v3.12.0 // indirect
 )
 
-tool github.com/wailsapp/wails/v3/cmd/wails3
+tool (
+	github.com/evanw/esbuild/cmd/esbuild
+	github.com/wailsapp/wails/v3/cmd/wails3
+)
 
 // Constrain vulnerable transitive selections, including unused modules in the full graph.
 replace github.com/buger/jsonparser v1.1.1 => github.com/buger/jsonparser v1.1.2

@@ -178,6 +178,16 @@ class ProjectToolTests(unittest.TestCase):
                 self.check([release('1.4.0')], tool='vite', api=api)
         self.assertEqual(api.writes, [])
 
+    def test_esbuild_security_uses_the_pinned_go_module(self):
+        advisory = {'vulns': [{'id': 'GO-test', 'affected': [{
+            'package': {'name': 'github.com/evanw/esbuild'},
+            'ranges': [{'events': [{'fixed': '1.3.0'}]}],
+        }]}]}
+        with patch.object(monitor.core, 'request_json', return_value=advisory) as query:
+            result, _ = self.check([release('1.4.0')], tool='esbuild')
+        self.assertTrue(result['security'])
+        self.assertEqual(query.call_args.kwargs['data']['package'], {'ecosystem': 'Go', 'name': 'github.com/evanw/esbuild'})
+
     def test_security_escalation_is_deduplicated(self):
         issue = {'number': 1, 'title': '[一般版本更新]', 'body': '<!-- codex-skills:sbom-tool-update:powershell:1.4.0 -->', 'html_url': 'https://example.org/1'}
         api = FakeGitHub(issues=[issue])

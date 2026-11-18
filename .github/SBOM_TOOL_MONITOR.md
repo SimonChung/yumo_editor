@@ -4,7 +4,7 @@
 
 ## 本專案範圍
 
-Go、Git、Python、Node.js、npm、Task、NSIS、Wails CLI、TypeScript、Vite、Vite React plugin。
+Go、Git、Python、Node.js、npm、Task、NSIS、Wails CLI、TypeScript、esbuild。
 
 | 工具 | 比較方式 | 實際來源 |
 |---|---|---|
@@ -17,8 +17,7 @@ Go、Git、Python、Node.js、npm、Task、NSIS、Wails CLI、TypeScript、Vite�
 | NSIS | 未固定版本，追蹤啟用後的新發布 | `build.bat` |
 | Wails CLI | 實際固定版本 | `build/tools/go.mod` |
 | TypeScript | 實際固定版本 | `frontend/package-lock.json` |
-| Vite | 實際固定版本 | `frontend/package-lock.json` |
-| Vite React plugin | 實際固定版本 | `frontend/package-lock.json` |
+| esbuild | 實際固定版本 | `build/tools/go.mod` |
 
 ## 版本與通知規則
 

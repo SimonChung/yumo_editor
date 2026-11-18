@@ -1,0 +1,116 @@
+{
+  "status": "passed",
+  "verifiedAt": "2026-11-18T17:50:26.074886+00:00",
+  "platform": "windows/amd64",
+  "tools": {
+    "go": "1.27.4",
+    "esbuild": "0.28.2",
+    "npm": "11.13.0",
+    "trivy": "0.76.2",
+    "cyclonedx-gomod": "1.12.0"
+  },
+  "trivyDatabaseUpdatedAt": "2026-11-18T13:03:23.615586156Z",
+  "sourceManifestGitBlobs": {
+    "frontend/package.json": "89d9cca25ebb6190a1cfd57f8c3cceebe8ffdcf0",
+    "frontend/package-lock.json": "f112ef7ad2a42035dca55faa260349ee865cf495",
+    "go.mod": "8faca2ff13b808840e7bb126a51bb707aadc7713",
+    "go.sum": "a7bc8630f2535c1365e27e1c0ff76b9f956bf67b",
+    "build/tools/go.mod": "4371fe15b0999a440fbb7b8c45e4be3c1ce16f68",
+    "build/tools/go.sum": "38f169c19f75379503125ae63f5f135146a0a5c6"
+  },
+  "sourceCycloneDX": {
+    "file": "csv-preview-source.cdx.json",
+    "sha256": "37f38d42c1e65a158316e0d239f56df56d79209bc1bec7e21b00ff0b65004740"
+  },
+  "coverage": {
+    "npmLockedPackages": 33,
+    "rootGoManifestModules": 10,
+    "toolsGoManifestModules": 142
+  },
+  "npmAudit": {
+    "info": 0,
+    "low": 0,
+    "moderate": 0,
+    "high": 0,
+    "critical": 0,
+    "total": 0
+  },
+  "sourceHighCritical": {
+    "npmIncludingDevelopmentAndOptionalDependencies": {
+      "high": 0,
+      "critical": 0
+    },
+    "goApplicationModule": {
+      "high": 0,
+      "critical": 0
+    },
+    "goBuildToolsModule": {
+      "high": 0,
+      "critical": 0
+    }
+  },
+  "binaries": {
+    "app": {
+      "sha256": "0538e33cb51641222c516d7ded075bf5a31df440a0517cbe2905c241e40e83de",
+      "goBuildInfoComponentsVerified": 8,
+      "high": 0,
+      "critical": 0
+    },
+    "cli": {
+      "sha256": "8f334afb7649901e1a87dc33c8c5b9168b45c3227a96e5dc3de80cedabc12d08",
+      "goBuildInfoComponentsVerified": 140,
+      "high": 0,
+      "critical": 0
+    },
+    "esbuild": {
+      "sha256": "3e8b446de9b690b9571ff429451d7ce8ee575f63b441850501c8ea5d0346c46d",
+      "goBuildInfoComponentsVerified": 2,
+      "high": 0,
+      "critical": 0
+    }
+  },
+  "picomatch": {
+    "npmLockEntries": 0,
+    "caseInsensitiveNameOrImplementationMarkerMatches": 0,
+    "inspected": [
+      "npm lockfile",
+      "installed Windows npm package files",
+      "bundled frontend assets",
+      "Windows editor, Wails CLI and esbuild executables"
+    ]
+  },
+  "functionalChecks": [
+    "npm ci",
+    "npm run build",
+    "preview and development HTTP assets, fonts and live rebuild",
+    "task build",
+    "go build ./...",
+    "go test -count=1 ./...",
+    "go vet ./...",
+    "two Go modules tidy and verify",
+    "79 tool monitor tests",
+    "14 CSV parser cases and 1000 round trips",
+    "PASS uppercase CSV opened in split view with quoted fields and BOM",
+    "PASS preview mode",
+    "PASS edit mode",
+    "PASS split restored",
+    "PASS unterminated quote diagnostic",
+    "PASS empty document",
+    "PASS large CSV starts on first page",
+    "PASS last page is accessible",
+    "PASS live literal values and page clamp",
+    "PASS narrow split stacks vertically",
+    "PASS desktop split side by side",
+    "PASS native save writes raw source",
+    "PASS native reopen check.md",
+    "PASS native reopen check.svg",
+    "PASS native reopen data.CSV",
+    "PASS untitled editor",
+    "PASS native Save As CSV activates split preview",
+    "PASS native open CSV filter and disk round trip",
+    "PASS desktop Wails dev loads frontend",
+    "PASS desktop Wails dev CSV preview",
+    "PASS Wails WebView live reload"
+  ],
+  "scope": "Application and build dependencies on Windows. Windows, the separately installed WebView2 runtime and other operating systems are outside this scan."
+}

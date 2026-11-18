@@ -10,3 +10,19 @@ version: "0.3.0"
 author:
   name: "simon.chung.tw"
   email: "simon.chung.tw@gmail.com"
+
+dev_mode:
+  root_path: .
+  debounce: 1000
+  ignore:
+    dir: [.git, frontend, build]
+    watched_extension: ["*.go"]
+    git_ignore: true
+  executes:
+    - cmd: node build/wails.mjs task build:frontend
+      type: blocking
+    - cmd: node frontend/build.mjs dev
+      type: background
+    - cmd: go run .
+      type: primary
+      exit_policy: shutdown

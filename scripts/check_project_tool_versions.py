@@ -49,6 +49,7 @@ TOOL_DEFINITIONS = {
     'wails': {'name': 'Wails CLI', 'github': 'wailsapp/wails', 'osv': ['Go', 'github.com/wailsapp/wails/v3']},
     'nsis': {'name': 'NSIS', 'provider': 'nsis'},
     'typescript': {'name': 'TypeScript', 'npm': 'typescript'},
+    'esbuild': {'name': 'esbuild', 'github': 'evanw/esbuild', 'osv': ['Go', 'github.com/evanw/esbuild']},
     'vite': {'name': 'Vite', 'npm': 'vite'},
     'vite-react': {'name': 'Vite React plugin', 'npm': '@vitejs/plugin-react'},
     'action-checkout': {'name': 'actions/checkout', 'github': 'actions/checkout'},

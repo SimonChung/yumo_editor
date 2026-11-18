@@ -1,0 +1,64 @@
+.preview-workspace {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    flex-direction: column;
+    background: #161b24;
+}
+
+.preview-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    gap: 6px;
+    padding: 6px 12px;
+    background: #0f141c;
+    border-bottom: 1px solid #1a2332;
+}
+
+.preview-toolbar button {
+    border: 1px solid #334155;
+    border-radius: 4px;
+    padding: 4px 9px;
+    color: #cbd5e1;
+    background: #1e293b;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.preview-toolbar button:hover,
+.preview-toolbar button[aria-pressed="true"] {
+    border-color: #3b82f6;
+    background: #1d4ed8;
+    color: #fff;
+}
+
+.preview-content {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+}
+
+.preview-editor-pane,
+.preview-pane {
+    min-width: 0;
+    min-height: 0;
+    flex: 1 1 0;
+}
+
+.preview-pane-divider {
+    width: 1px;
+    flex: 0 0 1px;
+    background: #1a2332;
+}
+
+@media (max-width: 760px) {
+    .preview-content-split {
+        flex-direction: column;
+    }
+
+    .preview-content-split .preview-pane-divider {
+        width: auto;
+        height: 1px;
+        flex-basis: 1px;
+    }
+}
