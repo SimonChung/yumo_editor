@@ -1,0 +1,2 @@
+drag-drop/** -text whitespace=trailing-space,space-before-tab,cr-at-eol
+context-menu/** -text whitespace=trailing-space,space-before-tab,cr-at-eol
