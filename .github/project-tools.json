@@ -74,8 +74,7 @@
           "path": "build/tools/go.mod",
           "pattern": "^\\s*github.com/wailsapp/wails/v3 v(?P<version>\\S+)"
         }
-      ],
-      "channel": "installed-preview"
+      ]
     },
     "typescript": {
       "mode": "pin",

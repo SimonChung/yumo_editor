@@ -61,7 +61,7 @@
 
 - 可在「編輯」、「分割預覽」與「預覽」三種模式間切換。
 - SVG 預覽使用透明背景棋盤格，方便辨識圖像的透明區域。
-- 預覽會在 sandbox iframe 中呈現，隔離 SVG 內可能包含的指令碼。
+- 預覽以 SVG 圖片呈現，保留透明背景與即時更新。SVG 內的指令碼不會執行。
 - 開啟與另存新檔對話框皆提供 `.svg` 檔案篩選。
 
 ### CSV 表格預覽
@@ -79,18 +79,18 @@
 ## 技術架構
 
 - 後端：Go 1.27.4
-- 桌面框架：Wails v3.0.0-beta.30（CLI、Go module 與 `@wailsio/runtime` 使用相同版本）
+- 桌面框架：Wails v3.1.0（CLI、Go module 與 `@wailsio/runtime` 使用相同版本）
 - 前端：React／React DOM 19.3.1、TypeScript 7.0.2、esbuild 0.28.2（由 Go 依 `build/tools/go.mod` 編譯）
 - 語法著色：PrismJS
 - Markdown：Marked + DOMPurify
 
-本次建置的相依套件與 Windows 驗證範圍記錄在 [CycloneDX SBOM](docs/validation/csv-preview-source.cdx.json) 與 [驗證結果](docs/validation/csv-preview-verification.json)。
+Wails 3.1.0 的相依套件與建置驗證請見 [CycloneDX SBOM](docs/validation/wails-3.1.0-source.cdx.json) 與 [驗證結果](docs/validation/wails-3.1.0-verification.json)。CSV 預覽初版的 Windows 測試另見 [CSV 驗證紀錄](docs/validation/csv-preview-verification.json)。
 
 ## 開發環境需求
 
 - Go 1.27.4（`go.mod` 已固定最低版本；較舊的 Go 在 `GOTOOLCHAIN=auto` 時會自動下載所需工具鏈）
 - Node.js 20.19+ 或 22.12+；本次以 Node.js 24.15.0、npm 11.13.0 驗證
-- 專案鎖定的 Wails v3.0.0-beta.30 CLI（由下方入口建置；v3 仍為預發行版）
+- 專案鎖定的 Wails v3.1.0 CLI（由下方入口建置）
 - Windows 平台需安裝 WebView2 Runtime
 - 產生 Windows 安裝檔另需 [NSIS 3](https://nsis.sourceforge.io/Download)
 

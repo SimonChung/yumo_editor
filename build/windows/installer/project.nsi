@@ -8,7 +8,7 @@ Unicode true
 ## from outside of Wails for debugging and development of the installer.
 ##
 ## Build with the pinned Wails v3 CLI through build.bat or task windows:package.
-## wails_tools.nsh is generated from Wails v3.0.0-beta.30 build assets.
+## wails_tools.nsh is generated from Wails v3.1.0 build assets.
 ## Then you can call makensis on this file with specifying the path to your binary:
 ## For a AMD64 only installer:
 ## > makensis -DARG_WAILS_AMD64_BINARY=..\..\bin\app.exe

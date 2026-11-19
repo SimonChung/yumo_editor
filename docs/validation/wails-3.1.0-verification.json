@@ -1,0 +1,119 @@
+{
+  "verifiedAt": "2026-11-19T02:08:44.236397+00:00",
+  "platform": "macOS 27.2.1 arm64",
+  "wailsCliModuleAndNpmRuntime": "3.1.0",
+  "go": "1.27.4",
+  "esbuild": "0.28.2",
+  "trivy": "0.76.2",
+  "trivyDbUpdatedAt": "2026-11-18T13:03:23.615586156Z",
+  "cyclonedxGomod": "1.12.0",
+  "sourceManifestSha256": {
+    "go.mod": "98fc7cd5cb523f18f87e5768db0748e517ca21985d098a957d94a803654df8d1",
+    "go.sum": "5d23a0b4d5965abb142362c9cb3e7b6beea783fdc2dc80bad6a6297429a64cea",
+    "build/tools/go.mod": "0f9d7a6938fa6827d9a6c5a3a59be751e3d6123865df96e6921c48fb272c6638",
+    "build/tools/go.sum": "b92e15295c72bbf9c8f2c588284a10ea1a69be288c91dc673d5d1b4bf9f26877",
+    "frontend/package.json": "e6d44cba0348e04f4bcd04fe039abbb164dcea26434592f922a4c0e7afbe2024",
+    "frontend/package-lock.json": "dc23ae113ba2537b47d2b6e228a2aef096a4238658372b9cfb048c2aeddf3e45"
+  },
+  "sourceSBOM": {
+    "file": "wails-3.1.0-source.cdx.json",
+    "sha256": "1150c8c2a41e18f08ca604104827b1898953db7556cb5161f82dcdfced225bf8"
+  },
+  "verifiedManifestCoverage": {
+    "go.mod": 9,
+    "build/tools/go.mod": 136,
+    "frontend/package-lock.json": 33
+  },
+  "binaries": {
+    "app": {
+      "sha256": "803549519b1a57c9ab8734bf50072fbbb3707fb9643440578a1310ef70e09759",
+      "verifiedGoBuildInfoPackagesIncludingMainAndStd": 5
+    },
+    "windows": {
+      "sha256": "9cb4acef80432011d23d862919b989ada671a44baa91fea9d87372a4a2fa9649",
+      "verifiedGoBuildInfoPackagesIncludingMainAndStd": 7
+    },
+    "esbuild": {
+      "sha256": "2758be53fe6718ca25d92faf8f1986053475284dd5a0290beaea1933644ba21d",
+      "verifiedGoBuildInfoPackagesIncludingMainAndStd": 3
+    },
+    "wails": {
+      "sha256": "bd243fddcbc871deb2cc5c2d188c7f293b0af2c8db4319d93a9b21d7fabf16f9",
+      "verifiedGoBuildInfoPackagesIncludingMainAndStd": 129
+    }
+  },
+  "windowsNsis": {
+    "version": "3.13",
+    "installerSha256": "1aa942dc2f8e1554c7935432d4c16ae6f825abe7d26429d5f2b80fa74bd62e05"
+  },
+  "npmAudit": {
+    "info": 0,
+    "low": 0,
+    "moderate": 0,
+    "high": 0,
+    "critical": 0,
+    "total": 0
+  },
+  "trivyFindingsByScope": {
+    "app-modules": {
+      "HIGH": 0,
+      "CRITICAL": 0
+    },
+    "app": {
+      "HIGH": 0,
+      "CRITICAL": 0
+    },
+    "esbuild": {
+      "HIGH": 0,
+      "CRITICAL": 0
+    },
+    "source": {
+      "HIGH": 0,
+      "CRITICAL": 0
+    },
+    "tools-modules": {
+      "HIGH": 0,
+      "CRITICAL": 0
+    },
+    "wails": {
+      "HIGH": 0,
+      "CRITICAL": 0
+    },
+    "windows-binary": {
+      "HIGH": 0,
+      "CRITICAL": 0
+    }
+  },
+  "govulncheckBinaryFindings": {
+    "app": {},
+    "windows": {},
+    "esbuild": {},
+    "wails": {
+      "GO-2026-6905": [
+        "module",
+        "package"
+      ]
+    }
+  },
+  "tests": [
+    "macOS arm64 production package, strict codesign verification",
+    "go build, go vet, uncached Go tests and race tests",
+    "root and tool modules verified; go mod tidy -diff clean",
+    "TypeScript build, npm ci, regenerated Wails bindings",
+    "79 monitor tests and read-only upstream version check",
+    "Windows amd64 production cross-build with resources and NSIS packaging",
+    "macOS GUI: initial command-line launch and second-instance file forwarding",
+    "macOS GUI: quoted Chinese CSV fields with commas and newlines, live edit, UTF-8 save checked on disk and reload",
+    "macOS GUI: Markdown heading, standard SVG and namespace-less inline SVG as images, live SVG edits and accessible title refresh"
+  ],
+  "assessment": {
+    "WailsChildFrames": "SVG previews use the image decoder instead of embedding an untrusted document. The v3.0.0 release notes describe limitations for child frames under GHSA-2p5f-2gx8-mh8m.",
+    "source": "https://github.com/wailsapp/wails/releases/tag/v3.0.0",
+    "picomatch": "Absent from the frontend lockfile, installed frontend, bundled assets and inspected binaries."
+  },
+  "limitations": [
+    "Windows installation, execution and Explorer were not tested on Windows.",
+    "Mac linker warned about the 11.0 deployment target versus SDK-built objects; older macOS versions were not tested.",
+    "The Wails build CLI has an unrated github.com/blakesmith/ar advisory (GO-2026-6905), reported at module/package level. No affected symbol was reported."
+  ]
+}
