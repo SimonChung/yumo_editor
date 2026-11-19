@@ -1,0 +1,46 @@
+{
+  "verifiedAt": "2026-11-19T03:39:54.098043+00:00",
+  "source": "https://github.com/SimonChung/yumo_editor/releases/download/0.3.0/yumo_editor-amd64-installer.exe",
+  "installerSha256": "b14c66d57367d44d47494ce0cb1bdd3d4ccdb6a5081c5d4b7c576daf41641404",
+  "archiveMember": "yumo_editor.exe",
+  "exeSha256": "dbc016795f60e3ac342aca758e6f4b048e0b203e37a31899c1fe76f0b978f3ef",
+  "binaryCommit": "314d4d6bf3f8641fada76a1fd2192bfe5d0c424b",
+  "architecture": "windows/amd64",
+  "goModulesAndStd": {
+    "std": "go1.27.4",
+    "tw.ybak/yumo": "v0.0.0-20261118175049-314d4d6bf3f8",
+    "github.com/adrg/xdg": "v0.5.3",
+    "github.com/go-ole/go-ole": "v1.3.0",
+    "github.com/wailsapp/wails/v3": "v3.0.0-beta.30",
+    "golang.org/x/net": "v0.62.0",
+    "golang.org/x/sys": "v0.49.0",
+    "golang.org/x/text": "v0.43.0"
+  },
+  "sbom": "windows-0.3.0-amd64-314d4d6-app.cdx.json",
+  "sbomSha256": "2ae26be394e12decf157dbece2bd485e51c53c651e1bfb7b850cdd3cae0cb030",
+  "schema": "CycloneDX 1.6",
+  "schemaValidation": "passed",
+  "generator": "cyclonedx-gomod v1.12.0",
+  "trivy": "0.76.2",
+  "trivyDbUpdatedAt": "2026-11-18T13:03:23.615586156Z",
+  "trivyFindings": {
+    "binary-rootfs-vulnerabilities.json": {
+      "HIGH": 0,
+      "CRITICAL": 0
+    },
+    "sbom-vulnerabilities.json": {
+      "HIGH": 0,
+      "CRITICAL": 0
+    }
+  },
+  "govulncheck": {
+    "protocol_version": "v1.0.0",
+    "scanner_name": "govulncheck",
+    "scanner_version": "v1.9.0",
+    "db": "https://vuln.go.dev",
+    "db_last_modified": "2026-11-11T02:51:11Z",
+    "scan_level": "symbol",
+    "scan_mode": "binary"
+  },
+  "govulncheckFindings": 0
+}

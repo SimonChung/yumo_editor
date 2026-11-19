@@ -4,6 +4,10 @@
 
 玉墨是一個以 Go、Wails v3 與 React 製作的跨平台文字與程式碼編輯器。它提供輕量的多分頁編輯體驗，並內建 Markdown、SVG 與 CSV 即時預覽，適合撰寫筆記、文件、向量圖與小型程式碼檔案。
 
+## Windows x64 下載
+
+0.3.0 Release 的 Windows 安裝檔內含建置自 `314d4d6` 的 `yumo_editor.exe`，使用 Go 1.27.4 與 Wails v3.0.0-beta.30。[下載 Windows 安裝檔](https://github.com/SimonChung/yumo_editor/releases/download/0.3.0/yumo_editor-amd64-installer.exe) · [執行檔 SBOM](docs/validation/windows-0.3.0-amd64-314d4d6-app.cdx.json) · [驗證紀錄](docs/validation/windows-0.3.0-amd64-314d4d6.md)
+
 ## macOS 安裝與更新
 
 2026-11-19 已在 Apple Silicon Mac 實測提交 `5c4198f`。含右鍵服務的映像檔名為 `YuMo-Editor-0.3.0-macOS-arm64-Finder.dmg`。取得 DMG 後可依下列步驟安裝。若手邊只有 Git 原始碼，請見[建置與打包指南](build/README.md)。

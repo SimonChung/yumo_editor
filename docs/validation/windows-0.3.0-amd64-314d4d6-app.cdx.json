@@ -1,0 +1,301 @@
+{
+  "$schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.6",
+  "serialNumber": "urn:uuid:a297dfe1-aa41-4c82-a31b-851b41d115c1",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2026-11-19T11:37:36+08:00",
+    "tools": [
+      {
+        "vendor": "CycloneDX",
+        "name": "cyclonedx-gomod",
+        "version": "v1.12.0",
+        "hashes": [
+          {
+            "alg": "MD5",
+            "content": "458dc995a12c8554a5dee4442b608fc0"
+          },
+          {
+            "alg": "SHA-1",
+            "content": "ffe4e57ac2b46d3aa7c051fc56db6a089fa569cf"
+          },
+          {
+            "alg": "SHA-256",
+            "content": "97a76f47eb9892bbb449811baed835dc5a5c8b0398da5a5bdc7eae1e3c7a2437"
+          },
+          {
+            "alg": "SHA-384",
+            "content": "7d5e10d6df270b95421a8799548b5ed388e0ae4a4facf2360a475ba152274cce377beaecaf4f823645d8727fbbed4182"
+          },
+          {
+            "alg": "SHA-512",
+            "content": "195391a1341b4e76aaa3e5cd65ff464fbd0e3aa8ff5c740214302fa09117828c070eb9cb7d14dbf3cda6b11b212178ead9ffb72a123d478e18ab40e244e4cf83"
+          }
+        ],
+        "externalReferences": [
+          {
+            "url": "https://github.com/CycloneDX/cyclonedx-gomod",
+            "type": "vcs"
+          },
+          {
+            "url": "https://cyclonedx.org",
+            "type": "website"
+          }
+        ]
+      }
+    ],
+    "component": {
+      "bom-ref": "pkg:golang/tw.ybak/yumo@v0.0.0-20261118175049-314d4d6bf3f8?type=module",
+      "type": "application",
+      "name": "tw.ybak/yumo",
+      "version": "v0.0.0-20261118175049-314d4d6bf3f8",
+      "purl": "pkg:golang/tw.ybak/yumo@v0.0.0-20261118175049-314d4d6bf3f8?goarch=amd64&goos=windows&type=module",
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://github.com/SimonChung/yumo_editor/releases/download/0.3.0/yumo_editor-amd64-installer.exe",
+          "comment": "NSIS installer containing yumo_editor.exe",
+          "hashes": [
+            {
+              "alg": "SHA-256",
+              "content": "b14c66d57367d44d47494ce0cb1bdd3d4ccdb6a5081c5d4b7c576daf41641404"
+            }
+          ]
+        }
+      ]
+    },
+    "properties": [
+      {
+        "name": "cdx:gomod:binary:hash:MD5",
+        "value": "5a9f732def4abbd69811a06a111269ff"
+      },
+      {
+        "name": "cdx:gomod:binary:hash:SHA-1",
+        "value": "6726bab470796699d79803920b127630f44aa8d1"
+      },
+      {
+        "name": "cdx:gomod:binary:hash:SHA-256",
+        "value": "dbc016795f60e3ac342aca758e6f4b048e0b203e37a31899c1fe76f0b978f3ef"
+      },
+      {
+        "name": "cdx:gomod:binary:hash:SHA-384",
+        "value": "6e1e3d3d1efce6b3ef549cc2b21e804432638586bab4e06709736f7e204075aea18416cb553913012c99e586e32c33ce"
+      },
+      {
+        "name": "cdx:gomod:binary:hash:SHA-512",
+        "value": "ead24a7da7207ab4ae85683427e2f96048a464097ab800513c3bdc94bc5ce4de93f8e2600d677cc0d361eb76808a8b51be8f1b3cbf5907c398b0dfe780f7e7f7"
+      },
+      {
+        "name": "cdx:gomod:binary:name",
+        "value": "yumo_editor.exe"
+      },
+      {
+        "name": "cdx:gomod:build:compiler",
+        "value": "gc"
+      },
+      {
+        "name": "cdx:gomod:build:env:CGO_ENABLED",
+        "value": "0"
+      },
+      {
+        "name": "cdx:gomod:build:env:GOARCH",
+        "value": "amd64"
+      },
+      {
+        "name": "cdx:gomod:build:env:GOOS",
+        "value": "windows"
+      },
+      {
+        "name": "cdx:gomod:build:env:GOVERSION",
+        "value": "go1.27.4"
+      },
+      {
+        "name": "cdx:gomod:build:tag",
+        "value": "production"
+      },
+      {
+        "name": "cdx:gomod:build:vcs",
+        "value": "git"
+      },
+      {
+        "name": "cdx:gomod:build:vcs:modified",
+        "value": "false"
+      },
+      {
+        "name": "cdx:gomod:build:vcs:revision",
+        "value": "314d4d6bf3f8641fada76a1fd2192bfe5d0c424b"
+      },
+      {
+        "name": "cdx:gomod:build:vcs:time",
+        "value": "2026-11-18T17:50:49Z"
+      }
+    ]
+  },
+  "components": [
+    {
+      "bom-ref": "pkg:golang/github.com/adrg/xdg@v0.5.3?type=module",
+      "type": "library",
+      "name": "github.com/adrg/xdg",
+      "version": "v0.5.3",
+      "scope": "required",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "c519f12579deefea160dab51851d492e7bee71cb88782a01bb6aedb8ba9007bf"
+        }
+      ],
+      "purl": "pkg:golang/github.com/adrg/xdg@v0.5.3?goarch=amd64&goos=windows&type=module",
+      "externalReferences": [
+        {
+          "url": "https://github.com/adrg/xdg",
+          "type": "vcs"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:golang/github.com/go-ole/go-ole@v1.3.0?type=module",
+      "type": "library",
+      "name": "github.com/go-ole/go-ole",
+      "version": "v1.3.0",
+      "scope": "required",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "0edeb27bbfaf5c620a67b5ed938b3aff155d1834329efa26ef108511d5abeae1"
+        }
+      ],
+      "purl": "pkg:golang/github.com/go-ole/go-ole@v1.3.0?goarch=amd64&goos=windows&type=module",
+      "externalReferences": [
+        {
+          "url": "https://github.com/go-ole/go-ole",
+          "type": "vcs"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:golang/github.com/wailsapp/wails/v3@v3.0.0-beta.30?type=module",
+      "type": "library",
+      "name": "github.com/wailsapp/wails/v3",
+      "version": "v3.0.0-beta.30",
+      "scope": "required",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "b8c7fc42568449ec6a28a4084b05e8c12e3f46261e5c37c1f13b736f5502d6d4"
+        }
+      ],
+      "purl": "pkg:golang/github.com/wailsapp/wails/v3@v3.0.0-beta.30?goarch=amd64&goos=windows&type=module",
+      "externalReferences": [
+        {
+          "url": "https://github.com/wailsapp/wails",
+          "type": "vcs"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:golang/golang.org/x/net@v0.62.0?type=module",
+      "type": "library",
+      "name": "golang.org/x/net",
+      "version": "v0.62.0",
+      "scope": "required",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "d7c10b6a57cce7e5cd470cccda762a5ec650f41c92d6e863d8efd4efee63a916"
+        }
+      ],
+      "purl": "pkg:golang/golang.org/x/net@v0.62.0?goarch=amd64&goos=windows&type=module"
+    },
+    {
+      "bom-ref": "pkg:golang/golang.org/x/sys@v0.49.0?type=module",
+      "type": "library",
+      "name": "golang.org/x/sys",
+      "version": "v0.49.0",
+      "scope": "required",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "5dbce481824776a87ff26d94bb45bf750bfc9e4b71c780451e9d4cd2044e4d70"
+        }
+      ],
+      "purl": "pkg:golang/golang.org/x/sys@v0.49.0?goarch=amd64&goos=windows&type=module"
+    },
+    {
+      "bom-ref": "pkg:golang/golang.org/x/text@v0.43.0?type=module",
+      "type": "library",
+      "name": "golang.org/x/text",
+      "version": "v0.43.0",
+      "scope": "required",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "d508afae587002c9cc39caa039d97d9b2eecf4ec9997c3b9fd41944c9557a167"
+        }
+      ],
+      "purl": "pkg:golang/golang.org/x/text@v0.43.0?goarch=amd64&goos=windows&type=module"
+    },
+    {
+      "bom-ref": "pkg:golang/std@go1.27.4?type=module",
+      "type": "library",
+      "name": "std",
+      "version": "go1.27.4",
+      "scope": "required",
+      "purl": "pkg:golang/std@go1.27.4?goarch=amd64&goos=windows&type=module"
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "pkg:golang/tw.ybak/yumo@v0.0.0-20261118175049-314d4d6bf3f8?type=module",
+      "dependsOn": [
+        "pkg:golang/github.com/adrg/xdg@v0.5.3?type=module",
+        "pkg:golang/github.com/go-ole/go-ole@v1.3.0?type=module",
+        "pkg:golang/github.com/wailsapp/wails/v3@v3.0.0-beta.30?type=module",
+        "pkg:golang/golang.org/x/net@v0.62.0?type=module",
+        "pkg:golang/golang.org/x/sys@v0.49.0?type=module",
+        "pkg:golang/golang.org/x/text@v0.43.0?type=module"
+      ]
+    },
+    {
+      "ref": "pkg:golang/github.com/adrg/xdg@v0.5.3?type=module"
+    },
+    {
+      "ref": "pkg:golang/github.com/go-ole/go-ole@v1.3.0?type=module"
+    },
+    {
+      "ref": "pkg:golang/github.com/wailsapp/wails/v3@v3.0.0-beta.30?type=module"
+    },
+    {
+      "ref": "pkg:golang/golang.org/x/net@v0.62.0?type=module"
+    },
+    {
+      "ref": "pkg:golang/golang.org/x/sys@v0.49.0?type=module"
+    },
+    {
+      "ref": "pkg:golang/golang.org/x/text@v0.43.0?type=module"
+    },
+    {
+      "ref": "pkg:golang/std@go1.27.4?type=module"
+    }
+  ],
+  "compositions": [
+    {
+      "aggregate": "complete",
+      "dependencies": [
+        "pkg:golang/tw.ybak/yumo@v0.0.0-20261118175049-314d4d6bf3f8?type=module"
+      ]
+    },
+    {
+      "aggregate": "unknown",
+      "dependencies": [
+        "pkg:golang/github.com/adrg/xdg@v0.5.3?type=module",
+        "pkg:golang/github.com/go-ole/go-ole@v1.3.0?type=module",
+        "pkg:golang/github.com/wailsapp/wails/v3@v3.0.0-beta.30?type=module",
+        "pkg:golang/golang.org/x/net@v0.62.0?type=module",
+        "pkg:golang/golang.org/x/sys@v0.49.0?type=module",
+        "pkg:golang/golang.org/x/text@v0.43.0?type=module",
+        "pkg:golang/std@go1.27.4?type=module"
+      ]
+    }
+  ]
+}
