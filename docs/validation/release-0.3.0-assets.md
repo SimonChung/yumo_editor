@@ -10,3 +10,9 @@
 | macOS 執行檔 SBOM | [macos-0.3.0-5c4198f-app.cdx.json](https://github.com/SimonChung/yumo_editor/releases/download/0.3.0/macos-0.3.0-5c4198f-app.cdx.json) | 6,583 | `885b7ff06af7d5263fbdc12165d974519a542da3e3ee39f483589d2653e5dc1d` |
 
 Windows x64 安裝檔的建置提交為 `314d4d6`，macOS Finder 版 DMG 的建置提交為 `5c4198f`。兩個安裝檔的 SHA-256 均與各平台的驗證紀錄相符，兩份 SBOM 也分別與專案收錄的檔案逐位元組相同。[Windows 驗證紀錄](windows-0.3.0-amd64-314d4d6.md) · [macOS 驗證紀錄](macos-0.3.0-5c4198f.md)
+
+## 2026-11-19 12:19（台北時間）複核
+
+從公開的 Release 說明逐一開啟三份驗證紀錄，三個連結均回傳 HTTP 200。[四個附件的 SHA-256 核對紀錄](https://github.com/SimonChung/yumo_editor/blob/54e4380184b007c745ff05c9aa35621f7b5558d8/docs/validation/release-0.3.0-assets.md)、[Windows 驗證紀錄](https://github.com/SimonChung/yumo_editor/blob/5b779ac8e96f806f18a66a3108009ab13c05ce47/docs/validation/windows-0.3.0-amd64-314d4d6.md)、[macOS 驗證紀錄](https://github.com/SimonChung/yumo_editor/blob/df1a67095eeac8f3ba66f43a77985e2a8b8954cb/docs/validation/macos-0.3.0-5c4198f.md)。
+
+重新完整下載 Windows x64 安裝檔、macOS Finder 版 DMG 與兩份執行檔 SBOM，四個附件均回傳 HTTP 200。逐檔計算的 SHA-256 與位元組數皆與上表及 GitHub Release 的紀錄相符。
