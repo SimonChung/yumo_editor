@@ -4,6 +4,21 @@
 
 玉墨是一個以 Go、Wails v3 與 React 製作的跨平台文字與程式碼編輯器。它提供輕量的多分頁編輯體驗，並內建 Markdown、SVG 與 CSV 即時預覽，適合撰寫筆記、文件、向量圖與小型程式碼檔案。
 
+## macOS 安裝與更新
+
+2026-11-19 的 Apple Silicon 本機建置來自 `main` 提交 `a73a7c3`。磁碟映像位於建置端的 `build/bin/YuMo-Editor-0.3.0-macOS-arm64.dmg`。取得 DMG 後可依下列步驟安裝。若手邊只有 Git 原始碼，請見[建置與打包指南](build/README.md)。
+
+1. 更新前先儲存開啟的文件並退出 YuMo Editor。
+2. 打開 DMG，將 **YuMo Editor.app** 拖到旁邊的 **Applications**。更新既有版本時選擇「取代」，保留 App 名稱。
+3. 若要加入 Finder 右鍵選單，開啟映像內的「安裝 Finder 右鍵服務.pkg」。這是目前使用者的選裝元件，隨附版本 1.0 適用於 Apple Silicon、macOS 27.2 以上。已安裝此版服務者可沿用。
+4. 退出磁碟映像，從「應用程式」開啟 YuMo Editor。需要核對版本時，可比對本次 DMG 與執行檔的 SHA-256。[macOS 建置與安裝驗證紀錄](docs/validation/macos-0.3.0-a73a7c3.md)
+
+### 從 Finder 右鍵開檔
+
+在 Finder 選取檔案，按右鍵選擇 **「在YuMoEditor中開啟」**。本機已在右鍵選單第一層驗證這個項目。服務將所選檔案交給 `/Applications/YuMo Editor.app`。若編輯器已開啟，會在既有視窗切換或新增分頁。
+
+若找不到選單項目，請先確認選取的是檔案，再到 Finder 的「前往資料夾」輸入 `~/Library/Services`，查看是否有 `YuMoEditorFinder.service`。若項目出現但無法開檔，請確認 App 的名稱及安裝位置。要解除安裝，可退出編輯器後將 App 移到垃圾桶；要一併移除右鍵項目，再將該使用者的服務移到垃圾桶。
+
 ## 功能
 
 ### 檔案與分頁
@@ -35,6 +50,8 @@
 建置、原生開檔與選單註冊的驗證結果及限制，見 [右鍵選單驗收紀錄](docs/CONTEXT-MENU-VALIDATION.md)。
 
 ### 編輯體驗
+
+下列快捷鍵在 macOS 也可使用 `⌘` 作為修飾鍵，例如 `⌘S` 儲存、`⇧⌘S` 另存新檔。
 
 - 行號欄與編輯區同步捲動。
 - Go、PHP、Python、HTML 與 SVG 的語法著色。
@@ -70,6 +87,15 @@
 
 以逗號分隔欄位。含逗號或換行的欄位用雙引號包住，欄位內的雙引號寫成 `""`。引號格式有誤時，預覽會指出記錄與欄位，修正後即恢復表格。
 
+可將下列內容存成 UTF-8 的 `茶葉.csv`。表格應有三欄、兩筆資料。第一筆的產地是完整的「南投,鹿谷」，備註中的兩行會顯示在同一格。在分割預覽中把「臺南」改成「臺中」，預覽應立即更新。儲存、關閉分頁再開啟，即可核對磁碟上的結果。
+
+```csv
+名稱,產地,備註
+茶葉,"南投,鹿谷","第一行
+第二行"
+咖啡,臺南,結案通過
+```
+
 ### 編碼支援
 
 - 開啟檔案時自動嘗試辨識 UTF-8、Big5 與 GBK。
@@ -89,7 +115,8 @@ Wails 3.1.0 的相依套件與建置驗證請見 [CycloneDX SBOM](docs/validatio
 ## 開發環境需求
 
 - Go 1.27.4（`go.mod` 已固定最低版本；較舊的 Go 在 `GOTOOLCHAIN=auto` 時會自動下載所需工具鏈）
-- Node.js 20.19+ 或 22.12+；本次以 Node.js 24.15.0、npm 11.13.0 驗證
+- Node.js 20.x 自 20.19.0 起，或 22.12.0 以上。此次 macOS 打包使用 Node.js 24.15.0、npm 11.12.1。
+- macOS 需有 Xcode Command Line Tools 或含命令列工具的 Xcode，可用 `xcode-select -p` 確認。
 - 專案鎖定的 Wails v3.1.0 CLI（由下方入口建置）
 - Windows 平台需安裝 WebView2 Runtime
 - 產生 Windows 安裝檔另需 [NSIS 3](https://nsis.sourceforge.io/Download)
@@ -125,6 +152,14 @@ node build/wails.mjs dev
 此入口會保留呼叫端工作目錄，Go module、CLI 與前端 runtime 的版本一致性仍由建置流程檢查。
 
 ## 建置與驗證
+
+macOS 從專案根目錄執行以下指令，可產出並檢查本機架構的正式 App。製作 DMG、保留 Finder 服務與比對安裝副本的步驟見[建置與打包指南](build/README.md)。
+
+```sh
+bash build.sh build_installer
+codesign --verify --deep --strict --verbose=2 build/bin/yumo_editor.app
+open build/bin/yumo_editor.app
+```
 
 Windows 建立主程式與 NSIS 安裝檔（預設為 amd64／x64）：
 
@@ -176,13 +211,13 @@ go test ./...
 go vet ./...
 ```
 
-重新產生前後端繫結：
+重新產生前後端繫結（含乾淨 checkout 所需的嵌入資產準備）：
 
 ```powershell
-node build/wails.mjs generate bindings
+task generate:bindings
 ```
 
-### 本次升級與驗證（2026-10-18）
+### 歷史紀錄：2026-10-18 的 Windows 工具鏈升級
 
 版本以 [Go 官方下載](https://go.dev/dl/)、[Wails beta.30 發布](https://github.com/wailsapp/wails/releases/tag/v3.0.0-beta.30)、[React 版本頁](https://react.dev/versions) 及 npm registry 的 `latest` 標籤核對。
 
