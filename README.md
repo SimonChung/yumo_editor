@@ -1,6 +1,6 @@
 # 玉墨（YuMo Editor）
 
-目前版本：**V0.3.0**。
+目前版本：**V0.3.0**。[Windows、macOS 發布附件下載與 SHA-256 核對紀錄](docs/validation/release-0.3.0-assets.md)
 
 玉墨是一個以 Go、Wails v3 與 React 製作的跨平台文字與程式碼編輯器。它提供輕量的多分頁編輯體驗，並內建 Markdown、SVG 與 CSV 即時預覽，適合撰寫筆記、文件、向量圖與小型程式碼檔案。
 
