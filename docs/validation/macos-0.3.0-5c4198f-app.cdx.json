@@ -1,0 +1,219 @@
+{
+  "$schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.6",
+  "serialNumber": "urn:uuid:60f4b070-9a37-4811-8301-1cc7d3a303f6",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2026-11-19T11:14:16+08:00",
+    "tools": [
+      {
+        "vendor": "CycloneDX",
+        "name": "cyclonedx-gomod",
+        "version": "v1.12.0",
+        "hashes": [
+          {
+            "alg": "MD5",
+            "content": "458dc995a12c8554a5dee4442b608fc0"
+          },
+          {
+            "alg": "SHA-1",
+            "content": "ffe4e57ac2b46d3aa7c051fc56db6a089fa569cf"
+          },
+          {
+            "alg": "SHA-256",
+            "content": "97a76f47eb9892bbb449811baed835dc5a5c8b0398da5a5bdc7eae1e3c7a2437"
+          },
+          {
+            "alg": "SHA-384",
+            "content": "7d5e10d6df270b95421a8799548b5ed388e0ae4a4facf2360a475ba152274cce377beaecaf4f823645d8727fbbed4182"
+          },
+          {
+            "alg": "SHA-512",
+            "content": "195391a1341b4e76aaa3e5cd65ff464fbd0e3aa8ff5c740214302fa09117828c070eb9cb7d14dbf3cda6b11b212178ead9ffb72a123d478e18ab40e244e4cf83"
+          }
+        ],
+        "externalReferences": [
+          {
+            "url": "https://github.com/CycloneDX/cyclonedx-gomod",
+            "type": "vcs"
+          },
+          {
+            "url": "https://cyclonedx.org",
+            "type": "website"
+          }
+        ]
+      }
+    ],
+    "component": {
+      "bom-ref": "pkg:golang/tw.ybak/yumo@v0.0.0-20261119031305-5c4198f6a118?type=module",
+      "type": "application",
+      "name": "tw.ybak/yumo",
+      "version": "v0.0.0-20261119031305-5c4198f6a118",
+      "purl": "pkg:golang/tw.ybak/yumo@v0.0.0-20261119031305-5c4198f6a118?goarch=arm64\u0026goos=darwin\u0026type=module"
+    },
+    "properties": [
+      {
+        "name": "cdx:gomod:binary:hash:MD5",
+        "value": "f5530cd991a6684fd5d39d49ca57672b"
+      },
+      {
+        "name": "cdx:gomod:binary:hash:SHA-1",
+        "value": "7be5ef8a623186feed23e31d1aa1d24eac591ce8"
+      },
+      {
+        "name": "cdx:gomod:binary:hash:SHA-256",
+        "value": "bc1ad2d2b272f7a6acc6e20067595f52d3fd47f35e8996eb9e2d6c0e5fc262ba"
+      },
+      {
+        "name": "cdx:gomod:binary:hash:SHA-384",
+        "value": "9186f2934634fd5230c62cfc6d143ceaaab58f33c9d812f4656c0c987cd4a7d6313ccb01a74d9b9c79fd1f24e208153a"
+      },
+      {
+        "name": "cdx:gomod:binary:hash:SHA-512",
+        "value": "2c4d1a508454e50b45fc42d33c7ad2078261ff14088a4833f0bcd1a93cd319b414b341c24e14e1e468cd5016f9c9479db4de1eaa8cd9e4f3ffeaa6f1ce983325"
+      },
+      {
+        "name": "cdx:gomod:binary:name",
+        "value": "yumo_editor"
+      },
+      {
+        "name": "cdx:gomod:build:compiler",
+        "value": "gc"
+      },
+      {
+        "name": "cdx:gomod:build:env:CGO_ENABLED",
+        "value": "1"
+      },
+      {
+        "name": "cdx:gomod:build:env:GOARCH",
+        "value": "arm64"
+      },
+      {
+        "name": "cdx:gomod:build:env:GOOS",
+        "value": "darwin"
+      },
+      {
+        "name": "cdx:gomod:build:env:GOVERSION",
+        "value": "go1.27.4"
+      },
+      {
+        "name": "cdx:gomod:build:tag",
+        "value": "production"
+      },
+      {
+        "name": "cdx:gomod:build:vcs",
+        "value": "git"
+      },
+      {
+        "name": "cdx:gomod:build:vcs:modified",
+        "value": "false"
+      },
+      {
+        "name": "cdx:gomod:build:vcs:revision",
+        "value": "5c4198f6a1183004a3c1e6d012aabd0c6d2b0bfc"
+      },
+      {
+        "name": "cdx:gomod:build:vcs:time",
+        "value": "2026-11-19T03:13:05Z"
+      }
+    ]
+  },
+  "components": [
+    {
+      "bom-ref": "pkg:golang/github.com/wailsapp/wails/v3@v3.1.0?type=module",
+      "type": "library",
+      "name": "github.com/wailsapp/wails/v3",
+      "version": "v3.1.0",
+      "scope": "required",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "95dd005d289c5e24d3b08be64eadea367f45cc23fcbc81d148976444b81a028f"
+        }
+      ],
+      "purl": "pkg:golang/github.com/wailsapp/wails/v3@v3.1.0?goarch=arm64\u0026goos=darwin\u0026type=module",
+      "externalReferences": [
+        {
+          "url": "https://github.com/wailsapp/wails",
+          "type": "vcs"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:golang/golang.org/x/net@v0.62.0?type=module",
+      "type": "library",
+      "name": "golang.org/x/net",
+      "version": "v0.62.0",
+      "scope": "required",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "d7c10b6a57cce7e5cd470cccda762a5ec650f41c92d6e863d8efd4efee63a916"
+        }
+      ],
+      "purl": "pkg:golang/golang.org/x/net@v0.62.0?goarch=arm64\u0026goos=darwin\u0026type=module"
+    },
+    {
+      "bom-ref": "pkg:golang/golang.org/x/text@v0.43.0?type=module",
+      "type": "library",
+      "name": "golang.org/x/text",
+      "version": "v0.43.0",
+      "scope": "required",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "d508afae587002c9cc39caa039d97d9b2eecf4ec9997c3b9fd41944c9557a167"
+        }
+      ],
+      "purl": "pkg:golang/golang.org/x/text@v0.43.0?goarch=arm64\u0026goos=darwin\u0026type=module"
+    },
+    {
+      "bom-ref": "pkg:golang/std@go1.27.4?type=module",
+      "type": "library",
+      "name": "std",
+      "version": "go1.27.4",
+      "scope": "required",
+      "purl": "pkg:golang/std@go1.27.4?goarch=arm64\u0026goos=darwin\u0026type=module"
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "pkg:golang/tw.ybak/yumo@v0.0.0-20261119031305-5c4198f6a118?type=module",
+      "dependsOn": [
+        "pkg:golang/github.com/wailsapp/wails/v3@v3.1.0?type=module",
+        "pkg:golang/golang.org/x/net@v0.62.0?type=module",
+        "pkg:golang/golang.org/x/text@v0.43.0?type=module"
+      ]
+    },
+    {
+      "ref": "pkg:golang/github.com/wailsapp/wails/v3@v3.1.0?type=module"
+    },
+    {
+      "ref": "pkg:golang/golang.org/x/net@v0.62.0?type=module"
+    },
+    {
+      "ref": "pkg:golang/golang.org/x/text@v0.43.0?type=module"
+    },
+    {
+      "ref": "pkg:golang/std@go1.27.4?type=module"
+    }
+  ],
+  "compositions": [
+    {
+      "aggregate": "complete",
+      "dependencies": [
+        "pkg:golang/tw.ybak/yumo@v0.0.0-20261119031305-5c4198f6a118?type=module"
+      ]
+    },
+    {
+      "aggregate": "unknown",
+      "dependencies": [
+        "pkg:golang/github.com/wailsapp/wails/v3@v3.1.0?type=module",
+        "pkg:golang/golang.org/x/net@v0.62.0?type=module",
+        "pkg:golang/golang.org/x/text@v0.43.0?type=module",
+        "pkg:golang/std@go1.27.4?type=module"
+      ]
+    }
+  ]
+}

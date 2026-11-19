@@ -6,12 +6,12 @@
 
 ## macOS 安裝與更新
 
-2026-11-19 的 Apple Silicon 本機建置來自 `main` 提交 `a73a7c3`。磁碟映像位於建置端的 `build/bin/YuMo-Editor-0.3.0-macOS-arm64.dmg`。取得 DMG 後可依下列步驟安裝。若手邊只有 Git 原始碼，請見[建置與打包指南](build/README.md)。
+2026-11-19 已在 Apple Silicon Mac 實測提交 `5c4198f`。含右鍵服務的映像檔名為 `YuMo-Editor-0.3.0-macOS-arm64-Finder.dmg`。取得 DMG 後可依下列步驟安裝。若手邊只有 Git 原始碼，請見[建置與打包指南](build/README.md)。
 
 1. 更新前先儲存開啟的文件並退出 YuMo Editor。
 2. 打開 DMG，將 **YuMo Editor.app** 拖到旁邊的 **Applications**。更新既有版本時選擇「取代」，保留 App 名稱。
 3. 若要加入 Finder 右鍵選單，開啟映像內的「安裝 Finder 右鍵服務.pkg」。這是目前使用者的選裝元件，隨附版本 1.0 適用於 Apple Silicon、macOS 27.2 以上。已安裝此版服務者可沿用。
-4. 退出磁碟映像，從「應用程式」開啟 YuMo Editor。需要核對版本時，可比對本次 DMG 與執行檔的 SHA-256。[macOS 建置與安裝驗證紀錄](docs/validation/macos-0.3.0-a73a7c3.md)
+4. 退出磁碟映像，從「應用程式」開啟 YuMo Editor。需要核對版本時，可比對本次 DMG 與執行檔的 SHA-256。[5c4198f 安裝、Finder 右鍵與 CSV 實測紀錄](docs/validation/macos-0.3.0-5c4198f.md)
 
 ### 從 Finder 右鍵開檔
 

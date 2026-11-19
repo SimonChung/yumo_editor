@@ -27,7 +27,7 @@ bash build.sh dmg
 YUMO_FINDER_MEDIA="/Volumes/YuMo Editor" bash build.sh dmg
 ```
 
-此模式會核對服務安裝包的 SHA-256，將安裝包與說明一併放入檔名以 `-Finder.dmg` 結尾的映像。服務原始碼隨服務放在 `YuMoEditorFinder.service/Contents/Resources/FinderService.m`。兩種模式都保留已存在的同名 DMG，重建前可將先前映像改名或移到其他位置。[0.3.0 本機交付紀錄](../docs/validation/macos-0.3.0-a73a7c3.md)
+此模式會核對服務安裝包的 SHA-256，將安裝包與說明一併放入檔名以 `-Finder.dmg` 結尾的映像。服務原始碼隨服務放在 `YuMoEditorFinder.service/Contents/Resources/FinderService.m`。兩種模式都保留已存在的同名 DMG，重建前可將先前映像改名或移到其他位置。[5c4198f Finder 版 DMG 安裝與開檔紀錄](../docs/validation/macos-0.3.0-5c4198f.md)
 
 從乾淨的 checkout 打包後，可用以下指令檢查工作目錄。第一行應無輸出，第二行應成功退出。
 
@@ -48,7 +48,7 @@ codesign --verify --deep --strict --verbose=2 "$installed"
 go version -m "$installed/Contents/MacOS/yumo_editor"
 ```
 
-退出映像後從「應用程式」啟動，用 [README 的 CSV 範例](../README.md#csv-表格預覽)檢查中文、引號內逗號與跨行欄位。交付前再以同一份執行檔驗證 SBOM，各檢查範圍與已知公告見[安全驗證紀錄](../docs/validation/macos-0.3.0-a73a7c3.md#相依與安全掃描)。
+退出映像後從「應用程式」啟動，用 [README 的 CSV 範例](../README.md#csv-表格預覽)檢查中文、引號內逗號與跨行欄位。交付前再以同一份執行檔驗證 SBOM，各檢查範圍與已知公告見[安全驗證紀錄](../docs/validation/macos-0.3.0-5c4198f.md#相依與安全掃描)。
 
 ## Windows
 

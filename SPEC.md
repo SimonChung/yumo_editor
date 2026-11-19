@@ -65,7 +65,7 @@ DMG 組裝、安裝副本比對與平台資產見[建置與打包指南](build/R
 
 ## 測試策略
 - **Go 測試**涵蓋編輯資料模型、檔案讀寫、編碼與待開檔佇列。
-- **桌面驗收**在正式 App 依序測試檔案選擇、分頁去重、三種預覽模式、即時編輯與存檔重開；各平台實際執行過的項目以對應日期的驗證紀錄為準。[macOS DMG](docs/validation/macos-0.3.0-a73a7c3.md) · [Windows 拖放](docs/DRAG-DROP-VALIDATION.md) · [Windows 右鍵](docs/CONTEXT-MENU-VALIDATION.md)
+- **桌面驗收**在正式 App 依序測試檔案選擇、分頁去重、三種預覽模式、即時編輯與存檔重開；各平台實際執行過的項目以對應日期的驗證紀錄為準。[macOS DMG 與 Finder 開檔](docs/validation/macos-0.3.0-5c4198f.md) · [Windows 拖放](docs/DRAG-DROP-VALIDATION.md) · [Windows 右鍵](docs/CONTEXT-MENU-VALIDATION.md)
 - **依賴檢查**涵蓋應用及工具 Go 模組、含開發相依的 npm 鎖檔，以及實際建置的執行檔。交付時應記錄對應產物雜湊與 High、Critical 數量。
 
 ## 邊界與規範
