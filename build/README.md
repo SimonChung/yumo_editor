@@ -11,47 +11,30 @@ lipo -archs build/bin/yumo_editor.app/Contents/MacOS/yumo_editor
 go version -m build/bin/yumo_editor.app/Contents/MacOS/yumo_editor
 ```
 
-`bash build.sh build` 產生執行檔 `build/bin/yumo_editor`。`build_installer` 會執行 Task 的 `darwin:package`，重新產生繫結、建置前端與正式執行檔，再把圖示、`Info.plist` 和執行檔放入 `build/bin/yumo_editor.app`，最後使用 ad hoc 簽章。打包時 Wails 也會更新 `build/` 下的圖示及平台範本。要重建某次提交，可在來源乾淨的目錄打包，並用上方的 `go version -m` 核對 `vcs.revision` 和 `vcs.modified=false`。
+`bash build.sh build` 產生執行檔 `build/bin/yumo_editor`。`build_installer` 會執行 Task 的 `darwin:package`，重新產生繫結、建置前端與正式執行檔，再把圖示、`Info.plist` 和執行檔放入 `build/bin/yumo_editor.app`，最後使用 ad hoc 簽章。打包時會讀取版控中的 `build/darwin/Info.plist`，只在 App 內的副本設定執行檔名與正式版權署名。Wails 從 `build/appicon.png` 直接將圖示產生在 App 的 `Contents/Resources/`。這個流程保留 macOS、Windows 的來源檔，也不建立 `build/ios/`。
 
 ### 製作 DMG
 
-只有 App 時，可直接用下列範例製作拖曳安裝的 DMG。若要重建 0.3.0 含右鍵服務的版本，先掛載一份含「安裝 Finder 右鍵服務.pkg」及「安裝說明.txt」的已驗證 0.3.0 映像，再設定來源。請依 Finder 實際顯示的卷名調整路徑。
+從專案根目錄執行下列指令，會先建置並簽署正式 App，再產生可拖曳到「應用程式」安裝的 DMG。完成後會驗證映像並印出 SHA-256。
 
 ```sh
-export YUMO_FINDER_MEDIA="/Volumes/YuMo Editor"
+bash build.sh dmg
 ```
 
-Finder 服務是獨立的 AppKit 服務，原始碼隨服務放在 `YuMoEditorFinder.service/Contents/Resources/FinderService.m`。目前 Git 中的 Task 只建置編輯器 App，重打包時可沿用經核對的服務安裝包。若只需 App，可用 `unset YUMO_FINDER_MEDIA` 清除上次設定的路徑。下列指令會從 App 讀取版本與架構，將新映像寫入 `build/bin/`，檔名末尾的 `App` 或 `Finder` 表示收錄的內容。
+預設產物為 `build/bin/YuMo-Editor-<版本>-macOS-<架構>-App.dmg`。要包含 Finder 右鍵服務，先掛載含「安裝 Finder 右鍵服務.pkg」及「安裝說明.txt」的已驗證 0.3.0 映像，再以實際卷名指定來源。
 
 ```sh
-(
-  set -eu
-  app=build/bin/yumo_editor.app
-  version=$(plutil -extract CFBundleShortVersionString raw "$app/Contents/Info.plist")
-  arch=$(lipo -archs "$app/Contents/MacOS/yumo_editor")
-  stage=$(mktemp -d)
-  trap 'rm -rf "$stage"' EXIT
-
-  ditto "$app" "$stage/YuMo Editor.app"
-  ln -s /Applications "$stage/Applications"
-  edition=App
-  if [ -n "${YUMO_FINDER_MEDIA:-}" ]; then
-    pkg="安裝 Finder 右鍵服務.pkg"
-    (cd "$YUMO_FINDER_MEDIA" && printf '%s  %s\n' \
-      '4f9d6aeffb962dfb92dad8382416cdad2cd9d5d9e4fb7e589b86acda2d4478cb' "$pkg" | shasum -a 256 -c -)
-    ditto "$YUMO_FINDER_MEDIA/$pkg" "$stage/$pkg"
-    ditto "$YUMO_FINDER_MEDIA/安裝說明.txt" "$stage/安裝說明.txt"
-    edition=Finder
-  fi
-
-  dmg="build/bin/YuMo-Editor-$version-macOS-$arch-$edition.dmg"
-  hdiutil create -format UDZO -fs HFS+ -volname "YuMo Editor" -srcfolder "$stage" "$dmg"
-  hdiutil verify "$dmg"
-  shasum -a 256 "$dmg"
-)
+YUMO_FINDER_MEDIA="/Volumes/YuMo Editor" bash build.sh dmg
 ```
 
-檔案已存在時，`hdiutil create` 會停止。2026-11-19 實際交付的映像檔名與 SHA-256 見[本機交付紀錄](../docs/validation/macos-0.3.0-a73a7c3.md)；每次產生的新映像均應記錄自己的雜湊。
+此模式會核對服務安裝包的 SHA-256，將安裝包與說明一併放入檔名以 `-Finder.dmg` 結尾的映像。服務原始碼隨服務放在 `YuMoEditorFinder.service/Contents/Resources/FinderService.m`。兩種模式都保留已存在的同名 DMG，重建前可將先前映像改名或移到其他位置。[0.3.0 本機交付紀錄](../docs/validation/macos-0.3.0-a73a7c3.md)
+
+從乾淨的 checkout 打包後，可用以下指令檢查工作目錄。第一行應無輸出，第二行應成功退出。
+
+```sh
+git status --porcelain=v1 --untracked-files=all
+test ! -e build/ios
+```
 
 ### 核對安裝副本
 

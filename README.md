@@ -153,7 +153,7 @@ node build/wails.mjs dev
 
 ## 建置與驗證
 
-macOS 從專案根目錄執行以下指令，可產出並檢查本機架構的正式 App。製作 DMG、保留 Finder 服務與比對安裝副本的步驟見[建置與打包指南](build/README.md)。
+macOS 從專案根目錄執行以下指令，可產出並檢查本機架構的正式 App。若要一併產生 DMG，執行 `bash build.sh dmg`。加入 Finder 服務與比對安裝副本的步驟見[建置與打包指南](build/README.md)。
 
 ```sh
 bash build.sh build_installer

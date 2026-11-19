@@ -28,6 +28,9 @@ case "$TARGET" in
         echo "[build_installer] Running: $TASK_CMD package"
         $TASK_CMD package
         ;;
+    dmg)
+        "$TASK_CMD" darwin:dmg
+        ;;
     dev)
         echo "[dev] Running pinned Wails CLI"
         node build/wails.mjs dev
@@ -42,7 +45,7 @@ case "$TARGET" in
         ;;
     *)
         echo "Unknown target: $TARGET"
-        echo "Usage: $0 [build | build_installer | dev | clean | clean_all]"
+        echo "Usage: $0 [build | build_installer | dmg | dev | clean | clean_all]"
         exit 1
         ;;
 esac
